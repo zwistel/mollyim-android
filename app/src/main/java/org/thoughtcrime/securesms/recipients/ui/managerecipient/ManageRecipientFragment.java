@@ -285,6 +285,20 @@ public class ManageRecipientFragment extends LoggingFragment {
       contactRow.setOnClickListener(v -> {
         startActivityForResult(new Intent(Intent.ACTION_VIEW, recipient.getContactUri()), REQUEST_CODE_VIEW_CONTACT);
       });
+    } else if (recipient.isNote()) {
+      notificationsCard.setVisibility(View.GONE);
+      groupMembershipCard.setVisibility(View.GONE);
+      blockUnblockCard.setVisibility(View.GONE);
+      contactRow.setVisibility(View.GONE);
+      colorTitle.setText(R.string.ManageRecipientActivity_note_color);
+      toolbar.setOnMenuItemClickListener(item -> {
+        if (item.getItemId() == R.id.action_edit) {
+          startActivityForResult(EditProfileActivity.getIntentForNoteEdit(requireActivity(), recipient.getId().serialize()), REQUEST_CODE_VIEW_CONTACT);
+          return true;
+        }
+        return false;
+      });
+      toolbar.getMenu().findItem(R.id.action_edit).setVisible(true);
     } else {
       contactText.setText(R.string.ManageRecipientActivity_add_to_system_contacts);
       contactIcon.setVisibility(View.GONE);
@@ -293,7 +307,7 @@ public class ManageRecipientFragment extends LoggingFragment {
       });
     }
 
-    disappearingMessagesCard.setVisibility(recipient.isRegistered() ? View.VISIBLE : View.GONE);
+    disappearingMessagesCard.setVisibility(recipient.isRegistered() || recipient.isNote() ? View.VISIBLE : View.GONE);
     addToAGroup.setVisibility(recipient.isRegistered() ? View.VISIBLE : View.GONE);
 
     MaterialColor recipientColor = recipient.getColor();

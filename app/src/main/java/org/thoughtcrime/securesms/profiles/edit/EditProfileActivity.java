@@ -26,6 +26,7 @@ public class EditProfileActivity extends BaseActivity implements EditProfileFrag
   public static final String NEXT_BUTTON_TEXT  = "next_button_text";
   public static final String SHOW_TOOLBAR      = "show_back_arrow";
   public static final String GROUP_ID          = "group_id";
+  public static final String NOTE_ID           = "note_id";
   public static final String START_AT_USERNAME = "start_at_username";
 
   private final DynamicTheme dynamicTheme = new DynamicRegistrationTheme();
@@ -48,6 +49,14 @@ public class EditProfileActivity extends BaseActivity implements EditProfileFrag
     Intent intent = new Intent(context, EditProfileActivity.class);
     intent.putExtra(EditProfileActivity.SHOW_TOOLBAR, true);
     intent.putExtra(EditProfileActivity.GROUP_ID, groupId.toString());
+    intent.putExtra(EditProfileActivity.NEXT_BUTTON_TEXT, R.string.save);
+    return intent;
+  }
+
+  public static @NonNull Intent getIntentForNoteEdit(@NonNull Context context, @NonNull String noteId) {
+    Intent intent = new Intent(context, EditProfileActivity.class);
+    intent.putExtra(EditProfileActivity.SHOW_TOOLBAR, true);
+    intent.putExtra(EditProfileActivity.NOTE_ID, noteId);
     intent.putExtra(EditProfileActivity.NEXT_BUTTON_TEXT, R.string.save);
     return intent;
   }

@@ -278,6 +278,10 @@ public class Recipient {
     return ApplicationDependencies.getRecipientCache().getSelf();
   }
 
+  public static Optional<RecipientId> selfId() {
+    return Optional.fromNullable(ApplicationDependencies.getRecipientCache().getSelfIdOrNull());
+  }
+
   Recipient(@NonNull RecipientId id) {
     this.id                     = id;
     this.resolving              = true;
@@ -728,16 +732,24 @@ public class Recipient {
     return insightsBannerTier.seen(InsightsBannerTier.TIER_TWO);
   }
 
+  public boolean isNote() {
+    return RecipientDetails.isNote(e164);
+  }
+
+  public boolean isConversationToSelf() {
+    return isLocalNumber() && !isNote();
+  }
+
   public @NonNull RegisteredState getRegistered() {
     if      (isPushGroup())   return RegisteredState.REGISTERED;
     else if (isMmsGroup())    return RegisteredState.NOT_REGISTERED;
-    else if (isLocalNumber()) return RegisteredState.REGISTERED;
+    else if (isNote())        return RegisteredState.NOT_REGISTERED;
 
     return registered;
   }
 
   public boolean isRegistered() {
-    return registered == RegisteredState.REGISTERED || isPushGroup() || isLocalNumber();
+    return registered == RegisteredState.REGISTERED || isPushGroup();
   }
 
   public @Nullable String getNotificationChannel() {

@@ -838,6 +838,10 @@ public class ConversationActivity extends PassphraseRequiredActivity
       } else {
         hideMenuItem(menu, R.id.menu_call_insecure);
       }
+      if (recipient.get().isNote()) {
+        hideMenuItem(menu, R.id.menu_add_to_contacts);
+        hideMenuItem(menu, R.id.menu_reset_secure_session);
+      }
 
       hideMenuItem(menu, R.id.menu_mute_notifications);
     }
@@ -1209,7 +1213,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
                                           @NonNull Recipient recipient)
   {
     IconCompat icon = IconCompat.createWithAdaptiveBitmap(bitmap);
-    String     name = recipient.isLocalNumber() ? context.getString(R.string.note_to_self)
+    String     name = recipient.isConversationToSelf() ? context.getString(R.string.note_to_self)
                                                   : recipient.getDisplayName(context);
 
     ShortcutInfoCompat shortcutInfoCompat = new ShortcutInfoCompat.Builder(context, recipient.getId().serialize() + '-' + System.currentTimeMillis())
@@ -1587,7 +1591,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   {
     final SettableFuture<Boolean> future = new SettableFuture<>();
 
-    handleSecurityChange(currentSecureText || isPushGroupConversation(), currentIsDefaultSms);
+    handleSecurityChange(currentSecureText || isPushGroupConversation() || isSelfConversation(), currentIsDefaultSms);
 
     new AsyncTask<Recipient, Void, boolean[]>() {
       @Override
@@ -1599,6 +1603,9 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
         if (recipient.isPushGroup()) {
           Log.i(TAG, "Push group recipient...");
+          registeredState = RegisteredState.REGISTERED;
+        } else if (recipient.isNote()) {
+          Log.i(TAG, "Note recipient...");
           registeredState = RegisteredState.REGISTERED;
         } else {
           Log.i(TAG, "Checking through resolved recipient");

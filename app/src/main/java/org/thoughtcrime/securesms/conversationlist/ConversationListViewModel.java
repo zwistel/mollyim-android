@@ -49,7 +49,7 @@ class ConversationListViewModel extends ViewModel {
 
   private String lastQuery;
 
-  private ConversationListViewModel(@NonNull Application application, @NonNull SearchRepository searchRepository, boolean isArchived) {
+  private ConversationListViewModel(@NonNull Application application, @NonNull SearchRepository searchRepository, Repository repository) {
     this.application         = application;
     this.megaphone           = new MutableLiveData<>();
     this.searchResult        = new MutableLiveData<>();
@@ -66,7 +66,7 @@ class ConversationListViewModel extends ViewModel {
       }
     };
 
-    DataSource.Factory<Integer, Conversation> factory = new ConversationListDataSource.Factory(application, invalidator, isArchived);
+    DataSource.Factory<Integer, Conversation> factory = repository.getDataSourceFactory(invalidator);
     PagedList.Config                          config  = new PagedList.Config.Builder()
                                                                             .setPageSize(15)
                                                                             .setInitialLoadSizeHint(30)
@@ -87,7 +87,7 @@ class ConversationListViewModel extends ViewModel {
 
       MutableLiveData<ConversationList> updated = new MutableLiveData<>();
 
-      if (isArchived) {
+      if (repository.isArchived()) {
         updated.postValue(new ConversationList(conversation, 0, 0));
       } else {
         SignalExecutors.BOUNDED.execute(() -> {
@@ -161,18 +161,23 @@ class ConversationListViewModel extends ViewModel {
     application.getContentResolver().unregisterContentObserver(observer);
   }
 
-  public static class Factory extends ViewModelProvider.NewInstanceFactory {
+  interface Repository {
+    DataSource.Factory<Integer, Conversation> getDataSourceFactory(@NonNull Invalidator invalidator);
+    boolean isArchived();
+  }
 
-    private final boolean isArchived;
+  static final class Factory implements ViewModelProvider.Factory {
 
-    public Factory(boolean isArchived) {
-      this.isArchived = isArchived;
+    private final Repository repository;
+
+    public Factory(Repository repository) {
+      this.repository = repository;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public @NonNull<T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-      //noinspection ConstantConditions
-      return modelClass.cast(new ConversationListViewModel(ApplicationDependencies.getApplication(), new SearchRepository(), isArchived));
+    public @NonNull <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+      return (T) new ConversationListViewModel(ApplicationDependencies.getApplication(), new SearchRepository(), repository);
     }
   }
 

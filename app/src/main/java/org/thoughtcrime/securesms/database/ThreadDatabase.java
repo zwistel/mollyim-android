@@ -149,7 +149,7 @@ public class ThreadDatabase extends Database {
     super(context, databaseHelper);
   }
 
-  private long createThreadForRecipient(@NonNull RecipientId recipientId, boolean group, int distributionType) {
+  public long createThreadForRecipient(@NonNull RecipientId recipientId, boolean group, int distributionType) {
     if (recipientId.isUnknown()) {
       throw new AssertionError("Cannot create a thread for an unknown recipient!");
     }
@@ -511,11 +511,11 @@ public class ThreadDatabase extends Database {
   }
 
   public Cursor getConversationList() {
-    return getConversationList("0");
+    return getUnarchivedConversationList(0, 0);
   }
 
   public Cursor getArchivedConversationList() {
-    return getConversationList("1");
+    return getArchivedConversationList(0, 0);
   }
 
   public boolean isArchived(@NonNull RecipientId recipientId) {
@@ -614,18 +614,28 @@ public class ThreadDatabase extends Database {
     return positions;
   }
 
+  private static final String NOTE_WHERE =
+      RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.PHONE + " LIKE '" + RecipientDetails.NOTE_PREFIX + "%'";
+
+  private static final String NOTE_WHERE_NOT =
+      "(" + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.PHONE + " IS NULL OR " +
+        RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.PHONE + " NOT LIKE '" + RecipientDetails.NOTE_PREFIX + "%')";
+
   public Cursor getArchivedConversationList(long offset, long limit) {
-    return getConversationList("1", offset, limit);
+    return getConversationList(createQuery(ARCHIVED + " = 1 AND " + MESSAGE_COUNT + " != 0", offset, limit, false));
   }
 
-  private Cursor getConversationList(String archived) {
-    return getConversationList(archived, 0, 0);
+  private Cursor getUnarchivedConversationList(long offset, long limit) {
+    return getConversationList(createQuery(ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + NOTE_WHERE_NOT, offset, limit, false));
+  }
+
+  public Cursor getNoteList(long offset, long limit) {
+    return getConversationList(createQuery(ARCHIVED + " = 0 AND " + NOTE_WHERE, offset, limit, false));
   }
 
   public Cursor getUnarchivedConversationList(boolean pinned, long offset, long limit) {
-    SQLiteDatabase db          = databaseHelper.getReadableDatabase();
     String         pinnedWhere = PINNED + (pinned ? " != 0" : " = 0");
-    String         where       = ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + pinnedWhere;
+    String         where       = ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + NOTE_WHERE_NOT + " AND " + pinnedWhere;
 
     final String query;
 
@@ -635,17 +645,12 @@ public class ThreadDatabase extends Database {
       query = createQuery(where, offset, limit, false);
     }
 
-    Cursor cursor = db.rawQuery(query, new String[]{});
-
-    setNotifyConversationListListeners(cursor);
-
-    return cursor;
+    return getConversationList(query);
   }
 
-  private Cursor getConversationList(@NonNull String archived, long offset, long limit) {
+  private Cursor getConversationList(String query) {
     SQLiteDatabase db     = databaseHelper.getReadableDatabase();
-    String         query  = createQuery(ARCHIVED + " = ? AND " + MESSAGE_COUNT + " != 0", offset, limit, false);
-    Cursor         cursor = db.rawQuery(query, new String[]{archived});
+    Cursor         cursor = db.rawQuery(query, null);
 
     setNotifyConversationListListeners(cursor);
 
@@ -653,40 +658,29 @@ public class ThreadDatabase extends Database {
   }
 
   public int getArchivedConversationListCount() {
-    SQLiteDatabase db      = databaseHelper.getReadableDatabase();
-    String[]       columns = new String[] { "COUNT(*)" };
-    String         query   = ARCHIVED + " = ? AND " + MESSAGE_COUNT + " != 0";
-    String[]       args    = new String[] {"1"};
-
-    try (Cursor cursor = db.query(TABLE_NAME, columns, query, args, null, null, null)) {
-      if (cursor != null && cursor.moveToFirst()) {
-        return cursor.getInt(0);
-      }
-    }
-
-    return 0;
+    return getConversationListCount(ARCHIVED + " = 1 AND " + MESSAGE_COUNT + " != 0");
   }
 
   public int getPinnedConversationListCount() {
-    SQLiteDatabase db      = databaseHelper.getReadableDatabase();
-    String[]       columns = new String[] { "COUNT(*)" };
-    String         query   = ARCHIVED + " = 0 AND " + PINNED + " != 0 AND " + MESSAGE_COUNT + " != 0";
-
-    try (Cursor cursor = db.query(TABLE_NAME, columns, query, null, null, null, null)) {
-      if (cursor != null && cursor.moveToFirst()) {
-        return cursor.getInt(0);
-      }
-    }
-
-    return 0;
+    return getConversationListCount(ARCHIVED + " = 0 AND " + PINNED + " != 0 AND " + MESSAGE_COUNT + " != 0 AND " + NOTE_WHERE_NOT);
   }
 
   public int getUnarchivedConversationListCount() {
+    return getConversationListCount(ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + NOTE_WHERE_NOT);
+  }
+
+  public int getNoteListCount() {
+    return getConversationListCount(ARCHIVED + " = 0 AND " + NOTE_WHERE);
+  }
+
+  private int getConversationListCount(String query) {
     SQLiteDatabase db      = databaseHelper.getReadableDatabase();
     String[]       columns = new String[] { "COUNT(*)" };
-    String         query   = ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0";
+    String         table   = TABLE_NAME +
+        " LEFT OUTER JOIN " + RecipientDatabase.TABLE_NAME +
+        " ON " + TABLE_NAME + "." + RECIPIENT_ID + " = " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.ID;
 
-    try (Cursor cursor = db.query(TABLE_NAME, columns, query, null, null, null, null)) {
+    try (Cursor cursor = db.query(table, columns, query, null, null, null, null)) {
       if (cursor != null && cursor.moveToFirst()) {
         return cursor.getInt(0);
       }
@@ -941,8 +935,11 @@ public class ThreadDatabase extends Database {
 
     if (count == 0) {
       if (allowDeletion) {
-        deleteThread(threadId);
-        notifyConversationListListeners();
+        Recipient recipient = DatabaseFactory.getThreadDatabase(context).getRecipientForThreadId(threadId);
+        if (recipient == null || !recipient.isNote()) {
+          deleteThread(threadId);
+          notifyConversationListListeners();
+        }
       }
       return true;
     }

@@ -115,7 +115,7 @@ public final class ManageRecipientViewModel extends ViewModel {
   }
 
   private static @NonNull String getDisplayTitle(@NonNull Recipient recipient, @NonNull Context context) {
-    if (recipient.isLocalNumber()) {
+    if (recipient.isConversationToSelf()) {
       return context.getString(R.string.note_to_self);
     } else {
       return recipient.getDisplayName(context);

@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
@@ -75,6 +77,7 @@ public abstract class SnackbarAsyncTask<Params>
             .setAction(snackbarActionText, this)
             .setActionTextColor(snackbarActionColor)
             .setTextColor(Color.WHITE)
+            .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE)
             .show();
   }
 

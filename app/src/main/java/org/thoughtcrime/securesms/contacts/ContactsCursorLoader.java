@@ -379,7 +379,7 @@ public class ContactsCursorLoader extends CursorLoader {
   }
 
   private static boolean selfEnabled(int mode) {
-    return flagSet(mode, DisplayMode.FLAG_SELF);
+    return false;
   }
 
   private static boolean newConversation(int mode) {

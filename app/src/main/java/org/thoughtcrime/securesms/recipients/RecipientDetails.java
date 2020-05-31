@@ -29,6 +29,8 @@ import java.util.UUID;
 
 public class RecipientDetails {
 
+  public static final String NOTE_PREFIX = "notes/#";
+
   final UUID                   uuid;
   final String                 username;
   final String                 e164;
@@ -167,9 +169,14 @@ public class RecipientDetails {
     this.mentionSetting         = MentionSetting.ALWAYS_NOTIFY;
   }
 
+  static boolean isNote(@Nullable String id) {
+    return id != null && id.startsWith(NOTE_PREFIX);
+  }
+
   public static @NonNull RecipientDetails forIndividual(@NonNull Context context, @NonNull RecipientSettings settings) {
     boolean systemContact = !TextUtils.isEmpty(settings.getSystemDisplayName());
     boolean isLocalNumber = (settings.getE164() != null && settings.getE164().equals(TextSecurePreferences.getLocalNumber(context))) ||
+                            isNote(settings.getE164()) ||
                             (settings.getUuid() != null && settings.getUuid().equals(TextSecurePreferences.getLocalUuid(context)));
 
     return new RecipientDetails(null, Optional.absent(), systemContact, isLocalNumber, settings, null);

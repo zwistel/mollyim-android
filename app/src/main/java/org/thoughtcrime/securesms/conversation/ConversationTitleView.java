@@ -125,6 +125,7 @@ public class ConversationTitleView extends RelativeLayout {
 
   private void setRecipientTitle(Recipient recipient) {
     if      (recipient.isGroup())       setGroupRecipientTitle(recipient);
+    else if (recipient.isNote())        setIndividualRecipientTitle(recipient);
     else if (recipient.isLocalNumber()) setSelfTitle();
     else                                setIndividualRecipientTitle(recipient);
   }

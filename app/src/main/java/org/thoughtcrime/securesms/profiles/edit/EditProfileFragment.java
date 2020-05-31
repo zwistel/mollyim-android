@@ -57,6 +57,7 @@ import static org.thoughtcrime.securesms.profiles.edit.EditProfileActivity.EXCLU
 import static org.thoughtcrime.securesms.profiles.edit.EditProfileActivity.GROUP_ID;
 import static org.thoughtcrime.securesms.profiles.edit.EditProfileActivity.NEXT_BUTTON_TEXT;
 import static org.thoughtcrime.securesms.profiles.edit.EditProfileActivity.NEXT_INTENT;
+import static org.thoughtcrime.securesms.profiles.edit.EditProfileActivity.NOTE_ID;
 import static org.thoughtcrime.securesms.profiles.edit.EditProfileActivity.SHOW_TOOLBAR;
 
 public class EditProfileFragment extends LoggingFragment {
@@ -121,10 +122,11 @@ public class EditProfileFragment extends LoggingFragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     final GroupId      groupId     = GroupId.parseNullableOrThrow(requireArguments().getString(GROUP_ID, null));
+    final String       noteId      = requireArguments().getString(NOTE_ID, null);
     final GroupId.Push pushGroupId = groupId != null ? groupId.requirePush() : null;
 
-    initializeResources(view, pushGroupId != null);
-    initializeViewModel(requireArguments().getBoolean(EXCLUDE_SYSTEM, false), pushGroupId,  savedInstanceState != null);
+    initializeResources(view, pushGroupId != null, noteId != null);
+    initializeViewModel(requireArguments().getBoolean(EXCLUDE_SYSTEM, false), pushGroupId, noteId, savedInstanceState != null);
     initializeProfileAvatar();
     initializeProfileName();
     initializeUsername();
@@ -189,11 +191,13 @@ public class EditProfileFragment extends LoggingFragment {
     }
   }
 
-  private void initializeViewModel(boolean excludeSystem, @Nullable GroupId.Push groupId, boolean hasSavedInstanceState) {
+  private void initializeViewModel(boolean excludeSystem, @Nullable GroupId.Push groupId, @Nullable String noteId, boolean hasSavedInstanceState) {
     EditProfileRepository repository;
 
     if (groupId != null) {
       repository = new EditPushGroupProfileRepository(requireContext(), groupId);
+    } else if (noteId != null) {
+      repository = new EditNoteRepository(requireContext(), noteId);
     } else {
       repository = new EditSelfProfileRepository(requireContext(), excludeSystem);
     }
@@ -203,7 +207,7 @@ public class EditProfileFragment extends LoggingFragment {
     viewModel = ViewModelProviders.of(this, factory).get(EditProfileViewModel.class);
   }
 
-  private void initializeResources(@NonNull View view, boolean isEditingGroup) {
+  private void initializeResources(@NonNull View view, boolean isEditingGroup, boolean isEditingNote) {
     Bundle arguments = requireArguments();
 
     this.toolbar            = view.findViewById(R.id.toolbar);
@@ -241,6 +245,17 @@ public class EditProfileFragment extends LoggingFragment {
       familyName.setEnabled(false);
       view.findViewById(R.id.description_text).setVisibility(View.GONE);
       view.<ImageView>findViewById(R.id.avatar_placeholder).setImageResource(R.drawable.ic_group_outline_40);
+    } else if (isEditingNote) {
+      givenName.setHint(R.string.EditProfileFragment_note_title);
+      givenName.requestFocus();
+      toolbar.setTitle(R.string.EditProfileFragment_edit_note_title);
+      preview.setVisibility(View.GONE);
+      familyName.setVisibility(View.GONE);
+      familyName.setEnabled(false);
+      view.findViewById(R.id.description_text).setVisibility(View.GONE);
+      view.findViewById(R.id.camera_icon).setVisibility(View.GONE);
+      view.<ImageView>findViewById(R.id.avatar_placeholder).setImageResource(R.drawable.ic_note_80);
+      avatar.setOnClickListener(null);
     } else {
       this.familyName.addTextChangedListener(new AfterTextChanged(s -> {
                                                                          trimInPlace(s, false);

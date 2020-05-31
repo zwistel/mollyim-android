@@ -383,7 +383,7 @@ final class MediaGalleryAllAdapter extends StickyHeaderGridAdapter {
     }
 
     private String getSentFromToString(@NonNull Recipient from, @NonNull Recipient thread) {
-      if (from.isLocalNumber() && from == thread) {
+      if (from.isConversationToSelf() && from == thread) {
         return context.getString(R.string.note_to_self);
       }
 

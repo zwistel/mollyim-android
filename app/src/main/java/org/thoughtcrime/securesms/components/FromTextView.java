@@ -59,7 +59,7 @@ public class FromTextView extends EmojiTextView {
                      Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 
 
-    if (recipient.isLocalNumber()) {
+    if (recipient.isConversationToSelf()) {
       builder.append(getContext().getString(R.string.note_to_self));
     } else {
       builder.append(fromSpan);

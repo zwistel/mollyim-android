@@ -472,6 +472,7 @@
     <activity android:name=".MainActivity"
               android:theme="@style/Theme.Signal.DayNight.NoActionBar"
               android:launchMode="singleTask"
+              android:windowSoftInputMode="adjustPan"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"/>
 
     <activity android:name=".pin.PinRestoreActivity"

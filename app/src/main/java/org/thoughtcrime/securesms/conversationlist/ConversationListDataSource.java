@@ -61,11 +61,6 @@ abstract class ConversationListDataSource extends PositionalDataSource<Conversat
     context.getContentResolver().registerContentObserver(DatabaseContentProviders.ConversationList.CONTENT_URI,  true, contentObserver);
   }
 
-  private static ConversationListDataSource create(@NonNull Context context, @NonNull Invalidator invalidator, boolean isArchived) {
-    if (!isArchived) return new UnarchivedConversationListDataSource(context, invalidator);
-    else             return new ArchivedConversationListDataSource(context, invalidator);
-  }
-
   @Override
   public final void loadInitial(@NonNull LoadInitialParams params, @NonNull LoadInitialCallback<Conversation> callback) {
     long start = System.currentTimeMillis();
@@ -120,7 +115,7 @@ abstract class ConversationListDataSource extends PositionalDataSource<Conversat
   protected abstract int getTotalCount();
   protected abstract Cursor getCursor(long offset, long limit);
 
-  private static class ArchivedConversationListDataSource extends ConversationListDataSource {
+  static class ArchivedConversationListDataSource extends ConversationListDataSource {
 
     ArchivedConversationListDataSource(@NonNull Context context, @NonNull Invalidator invalidator) {
       super(context, invalidator);
@@ -134,6 +129,25 @@ abstract class ConversationListDataSource extends PositionalDataSource<Conversat
     @Override
     protected Cursor getCursor(long offset, long limit) {
       return threadDatabase.getArchivedConversationList(offset, limit);
+    }
+  }
+
+  static class NoteListDataSource extends ConversationListDataSource {
+
+    NoteListDataSource(@NonNull Context context, @NonNull Invalidator invalidator) {
+      super(context, invalidator);
+    }
+
+    @Override
+    protected int getTotalCount() {
+//      return threadDatabase.getNoteListCount();
+      return threadDatabase.getNoteListCount();
+    }
+
+    @Override
+    protected Cursor getCursor(long offset, long limit) {
+//      return threadDatabase.getNoteList(offset, limit);
+      return threadDatabase.getNoteList(offset, limit);
     }
   }
 
@@ -214,24 +228,6 @@ abstract class ConversationListDataSource extends PositionalDataSource<Conversat
     @VisibleForTesting
     boolean hasArchivedFooter() {
       return archivedCount != 0;
-    }
-  }
-
-  static class Factory extends DataSource.Factory<Integer, Conversation> {
-
-    private final Context     context;
-    private final Invalidator invalidator;
-    private final boolean     isArchived;
-
-    public Factory(@NonNull Context context, @NonNull Invalidator invalidator, boolean isArchived) {
-      this.context     = context;
-      this.invalidator = invalidator;
-      this.isArchived  = isArchived;
-    }
-
-    @Override
-    public @NonNull DataSource<Integer, Conversation> create() {
-      return ConversationListDataSource.create(context, invalidator, isArchived);
     }
   }
 }

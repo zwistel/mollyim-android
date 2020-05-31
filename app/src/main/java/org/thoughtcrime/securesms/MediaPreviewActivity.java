@@ -196,7 +196,7 @@ public final class MediaPreviewActivity extends PassphraseRequiredActivity
 
       if (threadRecipient != null) {
         if (mediaItem.outgoing || threadRecipient.isGroup()) {
-          if (threadRecipient.isLocalNumber()) {
+          if (threadRecipient.isConversationToSelf()) {
             from = getString(R.string.note_to_self);
           } else {
             to = threadRecipient.getDisplayName(this);

@@ -35,10 +35,10 @@ public class MainNavigator {
     if (savedInstanceState != null) {
       return;
     }
-
-    getFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, ConversationListFragment.newInstance())
-                        .commit();
+//
+//    getFragmentManager().beginTransaction()
+//                        .add(R.id.fragment_container, ConversationListFragment.newInstance())
+//                        .commit();
   }
 
   /**
@@ -69,11 +69,9 @@ public class MainNavigator {
 
 
   public void goToArchiveList() {
-    getFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_from_end, R.anim.slide_to_start, R.anim.slide_from_start, R.anim.slide_to_end)
-                        .replace(R.id.fragment_container, ConversationListArchiveFragment.newInstance())
-                        .addToBackStack(null)
-                        .commit();
+//    getFragmentManager().beginTransaction()
+//                        .add(R.id.fragment_container, ConversationListFragment.newInstance())
+//                        .commit();
   }
 
   public void goToGroupCreation() {

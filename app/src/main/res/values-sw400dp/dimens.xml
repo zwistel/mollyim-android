@@ -13,4 +13,6 @@
     <dimen name="album_5_cell_size_small">99dp</dimen>
 
     <dimen name="message_audio_width">260dp</dimen>
+
+    <dimen name="nav_drawer_max_width">344dp</dimen>
 </resources>

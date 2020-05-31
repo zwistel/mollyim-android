@@ -163,4 +163,6 @@
     <dimen name="group_manage_fragment_row_horizontal_padding">16dp</dimen>
 
     <dimen name="wave_form_bar_width">2dp</dimen>
+
+    <dimen name="nav_drawer_max_width">264dp</dimen>
 </resources>

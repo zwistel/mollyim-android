@@ -456,7 +456,7 @@ public class MessageSender {
            recipient.isLocalNumber()                       &&
            !forceSms                                       &&
            TextSecurePreferences.isPushRegistered(context) &&
-           !TextSecurePreferences.isMultiDevice(context);
+           (recipient.isNote() || !TextSecurePreferences.isMultiDevice(context));
   }
 
   private static void sendLocalMediaSelf(Context context, Recipient recipient, long messageId) {

@@ -21,4 +21,12 @@
   <string name="ChangePassphraseDialogFragment_please_choose_a_passphrase_that_will_be_used_to_locally_encrypt_your_data_this_should_be_a_strong_passphrase">Please choose a passphrase that will be used to locally encrypt your data.\n\nThis should be a strong passphrase.</string>
   <string name="ChangePassphraseDialogFragment_generating_keys_this_may_take_a_while">Generating keys. This may take a while…</string>
   <string name="ManageRecipientActivity_note_color">Note color</string>
+  <string name="navigation_drawer__open">Open navigation drawer</string>
+  <string name="navigation_drawer__close">Close navigation drawer</string>
+  <string name="bottom_nav__chats">Chats</string>
+  <string name="bottom_nav__notebook">Notebook</string>
+  <string name="EditProfileFragment_note_title">Note title</string>
+  <string name="EditProfileFragment_edit_note_title">Edit note title</string>
+  <string name="NoteListFragment_untitled_note">Untitled note</string>
+  <string name="ContactSelectionListItem_notebook">Notebook</string>
 </resources>

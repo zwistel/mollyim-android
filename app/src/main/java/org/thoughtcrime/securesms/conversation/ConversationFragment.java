@@ -410,6 +410,8 @@ public class ConversationFragment extends LoggingFragment {
         }
       } else if (isSelf) {
         conversationBanner.setSubtitle(context.getString(R.string.ConversationFragment__you_can_add_notes_for_yourself_in_this_conversation));
+      } else if (recipient.isNote()) {
+        conversationBanner.setSubtitle(null);
       } else {
         String subtitle = recipient.getE164().orNull();
 
