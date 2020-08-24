@@ -14,6 +14,8 @@ import org.thoughtcrime.securesms.components.viewpager.HackyViewPager;
  */
 public class ControllableViewPager extends HackyViewPager {
 
+  private boolean swipingLocked;
+
   public ControllableViewPager(@NonNull Context context) {
     super(context);
   }
@@ -22,13 +24,18 @@ public class ControllableViewPager extends HackyViewPager {
     super(context, attrs);
   }
 
+  /** Disable swiping between pages. */
+  public void setSwipingLocked(boolean swipingLocked) {
+    this.swipingLocked = swipingLocked;
+  }
+
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
-    return isEnabled() && super.onTouchEvent(ev);
+    return !swipingLocked && isEnabled() && super.onTouchEvent(ev);
   }
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    return isEnabled() && super.onInterceptTouchEvent(ev);
+    return !swipingLocked && isEnabled() && super.onInterceptTouchEvent(ev);
   }
 }
