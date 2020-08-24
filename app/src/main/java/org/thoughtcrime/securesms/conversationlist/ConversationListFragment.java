@@ -997,7 +997,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   private class ArchiveListenerCallback extends ItemTouchHelper.SimpleCallback {
 
     ArchiveListenerCallback() {
-      super(0, ItemTouchHelper.RIGHT);
+      super(0, ItemTouchHelper.LEFT);
     }
 
     @Override
@@ -1042,7 +1042,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
         View  itemView = viewHolder.itemView;
         float alpha    = 1.0f - Math.abs(dX) / (float) viewHolder.itemView.getWidth();
 
-        if (dX > 0) {
+        if (dX < 0) {
           Resources resources = getResources();
 
           if (archiveDrawable == null) {
@@ -1051,11 +1051,11 @@ public class ConversationListFragment extends MainFragment implements ActionMode
           }
 
           canvas.save();
-          canvas.clipRect(itemView.getLeft(), itemView.getTop(), dX, itemView.getBottom());
+          canvas.clipRect(itemView.getRight() + dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
 
           canvas.drawColor(alpha > 0 ? resources.getColor(R.color.green_500) : Color.WHITE);
 
-          canvas.translate(itemView.getLeft() + resources.getDimension(R.dimen.conversation_list_fragment_archive_padding),
+          canvas.translate(itemView.getRight() - resources.getDimension(R.dimen.conversation_list_fragment_archive_padding) - archiveDrawable.getIntrinsicWidth(),
                            itemView.getTop() + (itemView.getBottom() - itemView.getTop() - archiveDrawable.getIntrinsicHeight()) / 2f);
 
           archiveDrawable.draw(canvas);
