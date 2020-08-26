@@ -13,6 +13,7 @@ public abstract class SnackbarAsyncTask<Params>
 {
 
   private final View    view;
+  private final View    anchor;
   private final String  snackbarText;
   private final String  snackbarActionText;
   private final int     snackbarActionColor;
@@ -23,6 +24,7 @@ public abstract class SnackbarAsyncTask<Params>
   private @Nullable ProgressDialog progressDialog;
 
   public SnackbarAsyncTask(View view,
+                           View anchor,
                            String snackbarText,
                            String snackbarActionText,
                            int snackbarActionColor,
@@ -30,11 +32,21 @@ public abstract class SnackbarAsyncTask<Params>
                            boolean showProgress)
   {
     this.view                = view;
+    this.anchor              = anchor;
     this.snackbarText        = snackbarText;
     this.snackbarActionText  = snackbarActionText;
     this.snackbarActionColor = snackbarActionColor;
     this.snackbarDuration    = snackbarDuration;
     this.showProgress        = showProgress;
+  }
+
+  public SnackbarAsyncTask(View view,
+                           String snackbarText,
+                           String snackbarActionText,
+                           int snackbarActionColor,
+                           int snackbarDuration,
+                           boolean showProgress) {
+    this(view, null, snackbarText, snackbarActionText, snackbarActionColor, snackbarDuration, showProgress);
   }
 
   @Override
@@ -59,6 +71,7 @@ public abstract class SnackbarAsyncTask<Params>
     }
 
     Snackbar.make(view, snackbarText, snackbarDuration)
+            .setAnchorView(anchor)
             .setAction(snackbarActionText, this)
             .setActionTextColor(snackbarActionColor)
             .setTextColor(Color.WHITE)
