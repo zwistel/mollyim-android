@@ -729,14 +729,15 @@ public class Recipient {
   }
 
   public @NonNull RegisteredState getRegistered() {
-    if      (isPushGroup()) return RegisteredState.REGISTERED;
-    else if (isMmsGroup())  return RegisteredState.NOT_REGISTERED;
+    if      (isPushGroup())   return RegisteredState.REGISTERED;
+    else if (isMmsGroup())    return RegisteredState.NOT_REGISTERED;
+    else if (isLocalNumber()) return RegisteredState.REGISTERED;
 
     return registered;
   }
 
   public boolean isRegistered() {
-    return registered == RegisteredState.REGISTERED || isPushGroup();
+    return registered == RegisteredState.REGISTERED || isPushGroup() || isLocalNumber();
   }
 
   public @Nullable String getNotificationChannel() {

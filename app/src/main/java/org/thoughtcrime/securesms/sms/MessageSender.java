@@ -238,7 +238,7 @@ public class MessageSender {
         Recipient                  recipient = message.getRecipient();
 
         if (isLocalSelfSend(context, recipient, false)) {
-          sendLocalMediaSelf(context, messageId);
+          sendLocalMediaSelf(context, recipient, messageId);
         } else if (isGroupPushSend(recipient)) {
           jobManager.add(new PushGroupSendJob(messageId, recipient.getId(), null, true), messageDependsOnIds, recipient.getId().toQueueKey());
         } else {
@@ -353,7 +353,7 @@ public class MessageSender {
   private static void sendMediaMessage(Context context, Recipient recipient, boolean forceSms, long messageId, @NonNull Collection<String> uploadJobIds)
   {
     if (isLocalSelfSend(context, recipient, forceSms)) {
-      sendLocalMediaSelf(context, messageId);
+      sendLocalMediaSelf(context, recipient, messageId);
     } else if (isGroupPushSend(recipient)) {
       sendGroupPush(context, recipient, messageId, null, uploadJobIds);
     } else if (!forceSms && isPushMediaSend(context, recipient)) {
@@ -368,7 +368,7 @@ public class MessageSender {
                                       long messageId)
   {
     if (isLocalSelfSend(context, recipient, forceSms)) {
-      sendLocalTextSelf(context, messageId);
+      sendLocalTextSelf(context, recipient, messageId);
     } else if (!forceSms && isPushTextSend(context, recipient, keyExchange)) {
       sendTextPush(recipient, messageId);
     } else {
@@ -459,13 +459,13 @@ public class MessageSender {
            !TextSecurePreferences.isMultiDevice(context);
   }
 
-  private static void sendLocalMediaSelf(Context context, long messageId) {
+  private static void sendLocalMediaSelf(Context context, Recipient recipient, long messageId) {
     try {
       ExpiringMessageManager expirationManager  = ApplicationContext.getInstance(context).getExpiringMessageManager();
       MessageDatabase        mmsDatabase        = DatabaseFactory.getMmsDatabase(context);
       MmsSmsDatabase         mmsSmsDatabase     = DatabaseFactory.getMmsSmsDatabase(context);
       OutgoingMediaMessage   message            = mmsDatabase.getOutgoingMessage(messageId);
-      SyncMessageId          syncId             = new SyncMessageId(Recipient.self().getId(), message.getSentTimeMillis());
+      SyncMessageId          syncId             = new SyncMessageId(recipient.getId(), message.getSentTimeMillis());
       List<Attachment>       attachments        = new LinkedList<>();
 
 
@@ -509,13 +509,13 @@ public class MessageSender {
     }
   }
 
-  private static void sendLocalTextSelf(Context context, long messageId) {
+  private static void sendLocalTextSelf(Context context, Recipient recipient, long messageId) {
     try {
       ExpiringMessageManager expirationManager = ApplicationContext.getInstance(context).getExpiringMessageManager();
       MessageDatabase        smsDatabase       = DatabaseFactory.getSmsDatabase(context);
       MmsSmsDatabase         mmsSmsDatabase    = DatabaseFactory.getMmsSmsDatabase(context);
       SmsMessageRecord       message           = smsDatabase.getSmsMessage(messageId);
-      SyncMessageId          syncId            = new SyncMessageId(Recipient.self().getId(), message.getDateSent());
+      SyncMessageId          syncId            = new SyncMessageId(recipient.getId(), message.getDateSent());
 
       smsDatabase.markAsSent(messageId, true);
       smsDatabase.markUnidentified(messageId, true);
