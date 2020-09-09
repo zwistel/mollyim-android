@@ -82,6 +82,7 @@ public class ManageRecipientFragment extends LoggingFragment {
   private View                                   disappearingMessagesRow;
   private TextView                               disappearingMessages;
   private View                                   colorRow;
+  private TextView                               colorTitle;
   private ImageView                              colorChip;
   private View                                   blockUnblockCard;
   private TextView                               block;
@@ -137,6 +138,7 @@ public class ManageRecipientFragment extends LoggingFragment {
     disappearingMessagesRow     = view.findViewById(R.id.disappearing_messages_row);
     disappearingMessages        = view.findViewById(R.id.disappearing_messages);
     colorRow                    = view.findViewById(R.id.color_row);
+    colorTitle                  = view.findViewById(R.id.color_title);
     colorChip                   = view.findViewById(R.id.color_chip);
     blockUnblockCard            = view.findViewById(R.id.recipient_block_and_leave_card);
     block                       = view.findViewById(R.id.block);
@@ -195,6 +197,7 @@ public class ManageRecipientFragment extends LoggingFragment {
       groupMembershipCard.setVisibility(View.GONE);
       blockUnblockCard.setVisibility(View.GONE);
       contactRow.setVisibility(View.GONE);
+      colorTitle.setText(R.string.ManageRecipientActivity_note_color);
     } else {
       viewModel.getVisibleSharedGroups().observe(getViewLifecycleOwner(), members -> sharedGroupList.setMembers(members));
       viewModel.getSharedGroupsCountSummary().observe(getViewLifecycleOwner(), members -> groupsInCommonCount.setText(members));
@@ -371,7 +374,7 @@ public class ManageRecipientFragment extends LoggingFragment {
                                                                   .build();
 
     ColorPickerDialog dialog = new ColorPickerDialog(requireActivity(), color -> viewModel.onSelectColor(color), params);
-    dialog.setTitle(R.string.ManageRecipientActivity_chat_color);
+    dialog.setTitle(colorTitle.getText());
     dialog.show();
   }
 
