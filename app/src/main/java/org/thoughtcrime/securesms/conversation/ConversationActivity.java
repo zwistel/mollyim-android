@@ -2951,7 +2951,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     @Override
     public void onTextChanged(String text) {
-      if (enabled && threadId > 0 && isSecureText && !isSmsForced() && !recipient.get().isBlocked()) {
+      if (enabled && threadId > 0 && isSecureText && !isSmsForced() && !recipient.get().isBlocked() && !recipient.get().isLocalNumber()) {
         ApplicationContext.getInstance(ConversationActivity.this).getTypingStatusSender().onTypingStarted(threadId);
       }
     }
