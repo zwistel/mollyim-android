@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -38,21 +37,19 @@ public class MainActivity extends PassphraseRequiredActivity {
   private final DynamicTheme  dynamicTheme = new DynamicNoActionBarTheme();
   private final MainNavigator navigator    = new MainNavigator(this);
 
-  private Toolbar                   toolbar;
   private ImageView                 icon;
   private MainPagerAdapter          pagerAdapter;
   private ControllableViewPager     fragmentPager;
   private DrawerLayout              drawerLayout;
   private MainActionBarDrawerToggle toggle;
   private FloatingActionButton      fab;
-  private ViewGroup                 megaphoneContainer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState, boolean ready) {
     super.onCreate(savedInstanceState, ready);
     setContentView(R.layout.main_activity);
 
-    toolbar = findViewById(R.id.toolbar);
+    Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
     icon = findViewById(R.id.toolbar_icon);
@@ -73,8 +70,6 @@ public class MainActivity extends PassphraseRequiredActivity {
 //    drawerLayout.addDrawerListener(toggle);
 
     fab = findViewById(R.id.fab);
-
-    megaphoneContainer = findViewById(R.id.megaphone_container);
 
     setUpBottomNavView();
 
@@ -111,18 +106,6 @@ public class MainActivity extends PassphraseRequiredActivity {
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
 //    toggle.onConfigurationChanged(newConfig);
-  }
-
-  public Toolbar getToolbar() {
-    return toolbar;
-  }
-
-  public View getSnackbarAnchor() {
-    return megaphoneContainer;
-  }
-
-  public ViewGroup getMegaphoneContainer() {
-    return megaphoneContainer;
   }
 
   public @NonNull MainNavigator getNavigator() {

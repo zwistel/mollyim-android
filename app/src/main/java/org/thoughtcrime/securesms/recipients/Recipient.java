@@ -278,10 +278,6 @@ public class Recipient {
     return ApplicationDependencies.getRecipientCache().getSelf();
   }
 
-  public static Optional<RecipientId> selfId() {
-    return Optional.fromNullable(ApplicationDependencies.getRecipientCache().getSelfIdOrNull());
-  }
-
   Recipient(@NonNull RecipientId id) {
     this.id                     = id;
     this.resolving              = true;

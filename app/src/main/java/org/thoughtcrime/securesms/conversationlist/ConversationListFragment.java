@@ -139,7 +139,6 @@ import static android.app.Activity.RESULT_OK;
 public class ConversationListFragment extends MainFragment implements ActionMode.Callback,
                                                                       ConversationListAdapter.OnConversationClickListener,
                                                                       ConversationListSearchAdapter.EventListener,
-                                                                      MainNavigator.BackHandler,
                                                                       MegaphoneActionController
 {
   public static final short MESSAGE_REQUESTS_REQUEST_CODE_CREATE_NAME = 32562;
@@ -159,10 +158,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   private ReminderView                      reminderView;
   private TextView                          emptyState;
   private TextView                          searchEmptyState;
-  private View                              snackbarAnchor;
-//  private SearchToolbar                     searchToolbar;
-//  private ImageView                         searchAction;
-//  private View                              toolbarShadow;
   private ConversationListViewModel         viewModel;
   private RecyclerView.Adapter              activeAdapter;
   private ConversationListAdapter           defaultAdapter;
@@ -191,16 +186,9 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     reminderView       = view.findViewById(R.id.reminder);
     list               = view.findViewById(R.id.list);
-    snackbarAnchor     = getSnackbarAnchor();
     emptyState         = view.findViewById(R.id.empty_state);
     searchEmptyState   = view.findViewById(R.id.search_no_results);
-//    searchToolbar      = view.findViewById(R.id.search_toolbar);
-//    toolbarShadow      = view.findViewById(R.id.conversation_list_toolbar_shadow);
-    megaphoneContainer = getMegaphoneContainer();
-
-//    Toolbar toolbar = view.findViewById(getToolbarRes());
-//    toolbar.setVisibility(View.VISIBLE);
-//    ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+    megaphoneContainer = requireActivity().findViewById(R.id.megaphone_container);
 
     reminderView.setOnDismissListener(this::updateReminders);
 
@@ -222,13 +210,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     updateReminders();
     EventBus.getDefault().register(this);
-
-//    SimpleTask.run(getLifecycle(), Recipient::self, this::initializeProfileIcon);
-
-//    if (!searchToolbar.isVisible() && list.getAdapter() != defaultAdapter) {
-//      list.removeItemDecoration(searchAdapterDecoration);
-//      setAdapter(defaultAdapter);
-//    }
 
     if (activeAdapter != null) {
       activeAdapter.notifyDataSetChanged();
@@ -324,11 +305,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   }
 
   @Override
-  public boolean onBackPressed() {
-    return closeSearchIfOpen();
-  }
-
-  @Override
   public void onUpdateFab(ImageView fab) {
     fab.setOnClickListener(this::onFabClick);
     fab.setImageResource(R.drawable.ic_compose_solid_24);
@@ -338,14 +314,12 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     startActivity(new Intent(getActivity(), NewConversationActivity.class));
   }
 
-  private boolean closeSearchIfOpen() {
-//    if (searchToolbar.isVisible() || activeAdapter == searchAdapter) {
-//      list.removeItemDecoration(searchAdapterDecoration);
-//      setAdapter(defaultAdapter);
-//      searchToolbar.collapse();
-//      return true;
-//    }
+  protected View getSnackbarAnchor() {
+    return megaphoneContainer;
+  }
 
+  private boolean closeSearchIfOpen() {
+    // TODO
     return false;
   }
 
@@ -357,7 +331,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     if (requestCode == CreateKbsPinActivity.REQUEST_NEW_PIN) {
       Snackbar.make(requireView(), R.string.ConfirmKbsPinFragment__pin_created, Snackbar.LENGTH_LONG)
-              .setAnchorView(snackbarAnchor)
+              .setAnchorView(getSnackbarAnchor())
               .setTextColor(Color.WHITE)
               .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE)
               .show();
@@ -419,7 +393,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   @Override
   public void onMegaphoneToastRequested(@NonNull String string) {
     Snackbar.make(requireView(), string, Snackbar.LENGTH_LONG)
-            .setAnchorView(snackbarAnchor)
+            .setAnchorView(getSnackbarAnchor())
             .setTextColor(Color.WHITE)
             .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE)
             .show();
@@ -523,7 +497,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     }
   }
 
-  private void onMegaphoneChanged(@Nullable Megaphone megaphone) {
+  protected void onMegaphoneChanged(@Nullable Megaphone megaphone) {
     if (megaphone == null) {
       megaphoneContainer.setVisibility(View.GONE);
       megaphoneContainer.removeAllViews();
@@ -650,7 +624,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     String    snackBarTitle         = getResources().getQuantityString(getArchivedSnackbarTitleRes(), count, count);
 
     new SnackbarAsyncTask<Void>(getView(),
-                                snackbarAnchor,
+                                getSnackbarAnchor(),
                                 snackBarTitle,
                                 getString(R.string.ConversationListFragment_undo),
                                 getResources().getColor(R.color.amber_500),
@@ -738,7 +712,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
       Snackbar.make(requireView(),
                     getString(R.string.conversation_list__you_can_only_pin_up_to_d_chats, MAXIMUM_PINNED_CONVERSATIONS),
                     Snackbar.LENGTH_LONG)
-              .setAnchorView(snackbarAnchor)
+              .setAnchorView(getSnackbarAnchor())
               .setTextColor(Color.WHITE)
               .show();
       actionMode.finish();
@@ -942,10 +916,6 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     }
   }
 
-  protected @IdRes int getToolbarRes() {
-    return R.id.toolbar;
-  }
-
   protected @PluralsRes int getArchivedSnackbarTitleRes() {
     return R.plurals.ConversationListFragment_conversations_archived;
   }
@@ -971,7 +941,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   @SuppressLint("StaticFieldLeak")
   protected void onItemSwiped(long threadId, int unreadCount) {
     new SnackbarAsyncTask<Long>(getView(),
-        snackbarAnchor,
+        getSnackbarAnchor(),
         getResources().getQuantityString(R.plurals.ConversationListFragment_conversations_archived, 1, 1),
         getString(R.string.ConversationListFragment_undo),
         getResources().getColor(R.color.amber_500),

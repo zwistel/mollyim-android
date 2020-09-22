@@ -475,6 +475,18 @@
               android:windowSoftInputMode="adjustPan"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"/>
 
+    <activity android:name=".ArchiveActivity"
+              android:label="@string/AndroidManifest_archived_conversations"
+              android:theme="@style/Theme.Signal.DayNight.NoActionBar"
+              android:launchMode="singleTask"
+              android:windowSoftInputMode="adjustPan"
+              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+              android:parentActivityName=".MainActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="org.thoughtcrime.securesms.MainActivity" />
+    </activity>
+
     <activity android:name=".pin.PinRestoreActivity"
               android:theme="@style/Theme.Signal.DayNight.NoActionBar"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"/>

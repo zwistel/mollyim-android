@@ -17,42 +17,20 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 
 public class MainNavigator {
 
-  private final MainActivity activity;
+  private final Activity activity;
 
-  public MainNavigator(@NonNull MainActivity activity) {
+  MainNavigator(@NonNull Activity activity) {
     this.activity = activity;
   }
 
   public static MainNavigator get(@NonNull Activity activity) {
-    if (!(activity instanceof MainActivity)) {
-      throw new IllegalArgumentException("Activity must be an instance of MainActivity!");
+    if (activity instanceof MainActivity) {
+      return ((MainActivity) activity).getNavigator();
     }
-
-    return ((MainActivity) activity).getNavigator();
-  }
-
-  public void onCreate(@Nullable Bundle savedInstanceState) {
-    if (savedInstanceState != null) {
-      return;
+    if (activity instanceof ArchiveActivity) {
+      return ((ArchiveActivity) activity).getNavigator();
     }
-//
-//    getFragmentManager().beginTransaction()
-//                        .add(R.id.fragment_container, ConversationListFragment.newInstance())
-//                        .commit();
-  }
-
-  /**
-   * @return True if the back pressed was handled in our own custom way, false if it should be given
-   *         to the system to do the default behavior.
-   */
-  public boolean onBackPressed() {
-    Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
-
-    if (fragment instanceof BackHandler) {
-      return ((BackHandler) fragment).onBackPressed();
-    }
-
-    return false;
+    throw new IllegalArgumentException("Activity must be an instance of MainActivity or ArchiveActivity!");
   }
 
   public void goToConversation(@NonNull RecipientId recipientId, long threadId, int distributionType, int startingPosition) {
@@ -67,11 +45,9 @@ public class MainNavigator {
     activity.startActivity(intent);
   }
 
-
   public void goToArchiveList() {
-//    getFragmentManager().beginTransaction()
-//                        .add(R.id.fragment_container, ConversationListFragment.newInstance())
-//                        .commit();
+    Intent intent = new Intent(activity, ArchiveActivity.class);
+    activity.startActivity(intent);
   }
 
   public void goToGroupCreation() {
@@ -81,17 +57,5 @@ public class MainNavigator {
   public void goToInvite() {
     Intent intent = new Intent(activity, InviteActivity.class);
     activity.startActivity(intent);
-  }
-
-  private @NonNull FragmentManager getFragmentManager() {
-    return activity.getSupportFragmentManager();
-  }
-
-  public interface BackHandler {
-    /**
-     * @return True if the back pressed was handled in our own custom way, false if it should be given
-     *         to the system to do the default behavior.
-     */
-    boolean onBackPressed();
   }
 }

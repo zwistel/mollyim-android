@@ -20,7 +20,6 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.MenuRes;
@@ -28,16 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
-import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
+import org.thoughtcrime.securesms.megaphone.Megaphone;
 import org.thoughtcrime.securesms.util.task.SnackbarAsyncTask;
 
 import java.util.Set;
@@ -64,11 +61,6 @@ public class ConversationListArchiveFragment extends ConversationListFragment im
 
     list       = view.findViewById(R.id.list);
     emptyState = view.findViewById(R.id.empty_state);
-
-//    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    Toolbar toolbar = getToolbar();
-    toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
-    toolbar.setTitle(R.string.AndroidManifest_archived_conversations);
   }
 
   @Override
@@ -78,20 +70,12 @@ public class ConversationListArchiveFragment extends ConversationListFragment im
   }
 
   @Override
-  public void onUpdateFab(ImageView fab) {
-    fab.setOnClickListener(null);
-    fab.setImageResource(R.drawable.ic_add_white_original_24dp);
-  }
-
-  @Override
   protected boolean isArchived() {
     return true;
   }
 
-//  @Override
-//  protected int getToolbarRes() {
-//    return R.id.toolbar_basic;
-//  }
+  @Override
+  protected void onMegaphoneChanged(@Nullable Megaphone megaphone) {}
 
   @Override
   protected @StringRes int getArchivedSnackbarTitleRes() {

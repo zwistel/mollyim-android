@@ -6,7 +6,6 @@ import android.content.Context;
 import androidx.annotation.AnyThread;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.annimon.stream.Stream;
@@ -115,12 +114,7 @@ public final class LiveRecipientCache {
     }
   }
 
-  @Nullable
-  RecipientId getSelfIdOrNull() {
-    if (localRecipientId != null) {
-      return localRecipientId;
-    }
-
+  @NonNull Recipient getSelf() {
     synchronized (SELF_LOCK) {
       if (localRecipientId == null) {
         UUID   localUuid = TextSecurePreferences.getLocalUuid(context);
@@ -131,26 +125,16 @@ public final class LiveRecipientCache {
         } else if (localE164 != null) {
           localRecipientId = recipientDatabase.getByE164(localE164).orNull();
         } else {
-          return null;
+          throw new IllegalStateException("Tried to call getSelf() before local data was set!");
         }
 
         if (localRecipientId == null) {
-          throw new MissingRecipientException(null);
+          throw new MissingRecipientException(localRecipientId);
         }
       }
     }
-    return localRecipientId;
-  }
 
-  @NonNull
-  Recipient getSelf() {
-    RecipientId self = getSelfIdOrNull();
-
-    if (self == null) {
-      throw new IllegalStateException("Tried to call getSelf() before local data was set!");
-    }
-
-    return getLive(self).resolve();
+    return getLive(localRecipientId).resolve();
   }
 
   @AnyThread
