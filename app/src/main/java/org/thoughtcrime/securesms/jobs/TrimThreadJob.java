@@ -58,8 +58,9 @@ public class TrimThreadJob extends BaseJob {
     boolean trimmingEnabled   = TextSecurePreferences.isThreadLengthTrimmingEnabled(context);
     int     threadLengthLimit = TextSecurePreferences.getThreadTrimLength(context);
 
-    if (!trimmingEnabled)
+    if (!trimmingEnabled || DatabaseFactory.getThreadDatabase(context).isNote(threadId)) {
       return;
+    }
 
     DatabaseFactory.getThreadDatabase(context).trimThread(threadId, threadLengthLimit);
   }
