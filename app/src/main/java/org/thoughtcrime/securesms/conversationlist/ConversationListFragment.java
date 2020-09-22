@@ -196,7 +196,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     searchEmptyState   = view.findViewById(R.id.search_no_results);
 //    searchToolbar      = view.findViewById(R.id.search_toolbar);
 //    toolbarShadow      = view.findViewById(R.id.conversation_list_toolbar_shadow);
-//    megaphoneContainer = view.findViewById(R.id.megaphone_container);
+    megaphoneContainer = getMegaphoneContainer();
 
 //    Toolbar toolbar = view.findViewById(getToolbarRes());
 //    toolbar.setVisibility(View.VISIBLE);
@@ -524,28 +524,28 @@ public class ConversationListFragment extends MainFragment implements ActionMode
   }
 
   private void onMegaphoneChanged(@Nullable Megaphone megaphone) {
-//    if (megaphone == null) {
-//      megaphoneContainer.setVisibility(View.GONE);
-//      megaphoneContainer.removeAllViews();
-//      return;
-//    }
-//
-//    View view = MegaphoneViewBuilder.build(requireContext(), megaphone, this);
-//
-//    megaphoneContainer.removeAllViews();
-//
-//    if (view != null) {
-//      megaphoneContainer.addView(view);
-//      megaphoneContainer.setVisibility(View.VISIBLE);
-//    } else {
-//      megaphoneContainer.setVisibility(View.GONE);
-//
-//      if (megaphone.getOnVisibleListener() != null) {
-//        megaphone.getOnVisibleListener().onEvent(megaphone, this);
-//      }
-//    }
-//
-//    viewModel.onMegaphoneVisible(megaphone);
+    if (megaphone == null) {
+      megaphoneContainer.setVisibility(View.GONE);
+      megaphoneContainer.removeAllViews();
+      return;
+    }
+
+    View view = MegaphoneViewBuilder.build(requireContext(), megaphone, this);
+
+    megaphoneContainer.removeAllViews();
+
+    if (view != null) {
+      megaphoneContainer.addView(view);
+      megaphoneContainer.setVisibility(View.VISIBLE);
+    } else {
+      megaphoneContainer.setVisibility(View.GONE);
+
+      if (megaphone.getOnVisibleListener() != null) {
+        megaphone.getOnVisibleListener().onEvent(megaphone, this);
+      }
+    }
+
+    viewModel.onMegaphoneVisible(megaphone);
   }
 
   private void updateReminders() {

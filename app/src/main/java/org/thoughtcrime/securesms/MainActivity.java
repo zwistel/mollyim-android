@@ -38,13 +38,14 @@ public class MainActivity extends PassphraseRequiredActivity {
   private final DynamicTheme  dynamicTheme = new DynamicNoActionBarTheme();
   private final MainNavigator navigator    = new MainNavigator(this);
 
-  private Toolbar toolbar;
-  private ImageView icon;
-  private MainPagerAdapter pagerAdapter;
-  private ControllableViewPager fragmentPager;
-  private DrawerLayout drawerLayout;
+  private Toolbar                   toolbar;
+  private ImageView                 icon;
+  private MainPagerAdapter          pagerAdapter;
+  private ControllableViewPager     fragmentPager;
+  private DrawerLayout              drawerLayout;
   private MainActionBarDrawerToggle toggle;
-  private FloatingActionButton fab;
+  private FloatingActionButton      fab;
+  private ViewGroup                 megaphoneContainer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState, boolean ready) {
@@ -72,6 +73,8 @@ public class MainActivity extends PassphraseRequiredActivity {
 //    drawerLayout.addDrawerListener(toggle);
 
     fab = findViewById(R.id.fab);
+
+    megaphoneContainer = findViewById(R.id.megaphone_container);
 
     setUpBottomNavView();
 
@@ -115,7 +118,11 @@ public class MainActivity extends PassphraseRequiredActivity {
   }
 
   public View getSnackbarAnchor() {
-    return fab;
+    return megaphoneContainer;
+  }
+
+  public ViewGroup getMegaphoneContainer() {
+    return megaphoneContainer;
   }
 
   public @NonNull MainNavigator getNavigator() {

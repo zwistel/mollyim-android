@@ -107,6 +107,30 @@
             app:layout_anchor="@id/bottom_bar"
             app:srcCompat="@drawable/ic_compose_solid_24" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            app:layout_anchor="@id/fab"
+            app:layout_anchorGravity="top">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/megaphone_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:visibility="gone"
+                app:cardBackgroundColor="?megaphone_background"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:cardPreventCornerOverlap="false"
+                app:contentPadding="0dp"
+                tools:visibility="visible" />
+
+        </RelativeLayout>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 <!--    <com.google.android.material.navigation.NavigationView-->

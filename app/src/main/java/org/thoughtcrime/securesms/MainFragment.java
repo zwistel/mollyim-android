@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,10 @@ public abstract class MainFragment extends LoggingFragment {
 
   protected View getSnackbarAnchor() {
     return ((MainActivity) requireActivity()).getSnackbarAnchor();
+  }
+
+  protected ViewGroup getMegaphoneContainer() {
+    return ((MainActivity) requireActivity()).getMegaphoneContainer();
   }
 
   protected @NonNull MainNavigator getNavigator() {
