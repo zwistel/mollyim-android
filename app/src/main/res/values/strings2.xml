@@ -29,4 +29,5 @@
   <string name="EditProfileFragment_edit_note_title">Edit note title</string>
   <string name="NoteListFragment_untitled_note">Untitled note</string>
   <string name="ContactsCursorLoader_notebook">Notebook</string>
+  <string name="MediaSendActivity_note">Note</string>
 </resources>

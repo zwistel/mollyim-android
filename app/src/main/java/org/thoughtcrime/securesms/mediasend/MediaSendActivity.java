@@ -830,6 +830,8 @@ public class MediaSendActivity extends PassphraseRequiredActivity implements Med
       composeText.setHint(R.string.MediaSendActivity_message);
     } else if (recipient.isConversationToSelf()) {
       composeText.setHint(getString(R.string.note_to_self), null);
+    } else if (recipient.isNote()) {
+      composeText.setHint(getString(R.string.MediaSendActivity_note), null);
     } else {
       composeText.setHint(getString(R.string.MediaSendActivity_message_to_s, recipient.getDisplayName(this)), null);
     }
