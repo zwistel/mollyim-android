@@ -116,7 +116,7 @@ public class RecipientDatabase extends Database {
   private static final String GROUPS_V2_CAPABILITY     = "gv2_capability";
   private static final String STORAGE_SERVICE_ID       = "storage_service_key";
   private static final String DIRTY                    = "dirty";
-  private static final String PROFILE_GIVEN_NAME       = "signal_profile_name";
+  public  static final String PROFILE_GIVEN_NAME       = "signal_profile_name";
   private static final String PROFILE_FAMILY_NAME      = "profile_family_name";
   private static final String PROFILE_JOINED_NAME      = "profile_joined_name";
   private static final String MENTION_SETTING          = "mention_setting";

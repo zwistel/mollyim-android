@@ -626,6 +626,9 @@ public class ThreadDatabase extends Database {
       "(" + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.PHONE + " IS NULL OR " +
         RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.PHONE + " NOT LIKE '" + RecipientDetails.NOTE_PREFIX + "%')";
 
+  private static final String NOTE_ORDER_BY =
+      RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.PROFILE_GIVEN_NAME;
+
   public Cursor getArchivedConversationList(long offset, long limit) {
     return getConversationList(createQuery(ARCHIVED + " = 1 AND " + MESSAGE_COUNT + " != 0", offset, limit, false));
   }
@@ -635,7 +638,7 @@ public class ThreadDatabase extends Database {
   }
 
   public Cursor getNoteList(long offset, long limit) {
-    return getConversationList(createQuery(ARCHIVED + " = 0 AND " + NOTE_WHERE, offset, limit, false));
+    return getConversationList(createQuery(ARCHIVED + " = 0 AND " + NOTE_WHERE, NOTE_ORDER_BY, offset, limit, false));
   }
 
   public Cursor getUnarchivedConversationList(boolean pinned, long offset, long limit) {
