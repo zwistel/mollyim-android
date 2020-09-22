@@ -518,6 +518,11 @@ public class ThreadDatabase extends Database {
     return getArchivedConversationList(0, 0);
   }
 
+  public boolean isNote(long threadId) {
+    Recipient recipient = getRecipientForThreadId(threadId);
+    return recipient != null && recipient.isNote();
+  }
+
   public boolean isArchived(@NonNull RecipientId recipientId) {
     SQLiteDatabase db    = databaseHelper.getReadableDatabase();
     String         query = RECIPIENT_ID + " = ?";
@@ -935,8 +940,7 @@ public class ThreadDatabase extends Database {
 
     if (count == 0) {
       if (allowDeletion) {
-        Recipient recipient = DatabaseFactory.getThreadDatabase(context).getRecipientForThreadId(threadId);
-        if (recipient == null || !recipient.isNote()) {
+        if (!DatabaseFactory.getThreadDatabase(context).isNote(threadId)) {
           deleteThread(threadId);
           notifyConversationListListeners();
         }
