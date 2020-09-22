@@ -153,6 +153,10 @@ public class ContactsCursorLoader extends CursorLoader {
   }
 
   private void addNotesSection(@NonNull List<Cursor> cursorList) {
+    if (!recents) {
+      return;
+    }
+
     Cursor notes = getNotesCursors();
 
     if (notes.getCount() > 0) {
