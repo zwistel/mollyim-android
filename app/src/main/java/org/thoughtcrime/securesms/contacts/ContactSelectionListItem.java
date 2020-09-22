@@ -120,10 +120,6 @@ public class ContactSelectionListItem extends LinearLayout implements RecipientF
       this.nameView.setEnabled(false);
       this.numberView.setText(getGroupMemberCount(recipient));
       this.labelView.setVisibility(View.GONE);
-    } else if (recipient != null && recipient.isNote()) {
-      this.nameView.setEnabled(false);
-      this.numberView.setText(getContext().getString(R.string.ContactSelectionListItem_notebook));
-      this.labelView.setVisibility(View.GONE);
     } else if (type == ContactRepository.PUSH_TYPE) {
       this.numberView.setText(number);
       this.nameView.setEnabled(true);

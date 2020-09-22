@@ -490,6 +490,8 @@ public class ThreadDatabase extends Database {
       query += " AND " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.GROUP_ID + " NOT NULL";
     }
 
+    query += " AND " + NOTE_WHERE_NOT;
+
     return db.rawQuery(createQuery(query, 0, limit, true), null);
   }
 

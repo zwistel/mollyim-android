@@ -120,6 +120,7 @@ public class ContactsCursorLoader extends CursorLoader {
       addGroupsSection(cursorList);
     } else {
       addRecentsSection(cursorList);
+      addNotesSection(cursorList);
       addContactsSection(cursorList);
     }
 
@@ -130,6 +131,7 @@ public class ContactsCursorLoader extends CursorLoader {
     ArrayList<Cursor> cursorList = new ArrayList<>();
 
     addContactsSection(cursorList);
+    addNotesSection(cursorList);
     addGroupsSection(cursorList);
     addNewNumberSection(cursorList);
     addUsernameSearchSection(cursorList);
@@ -147,6 +149,15 @@ public class ContactsCursorLoader extends CursorLoader {
     if (recentConversations.getCount() > 0) {
       cursorList.add(getRecentsHeaderCursor());
       cursorList.add(recentConversations);
+    }
+  }
+
+  private void addNotesSection(@NonNull List<Cursor> cursorList) {
+    Cursor notes = getNotesCursors();
+
+    if (notes.getCount() > 0) {
+      cursorList.add(getNotesHeaderCursor());
+      cursorList.add(notes);
     }
   }
 
@@ -211,6 +222,17 @@ public class ContactsCursorLoader extends CursorLoader {
                                        "",
                                        ContactRepository.DIVIDER_TYPE });
     return recentsHeader;
+  }
+
+  private Cursor getNotesHeaderCursor() {
+    MatrixCursor notesHeader = new MatrixCursor(CONTACT_PROJECTION, 1);
+    notesHeader.addRow(new Object[] { null,
+                                      getContext().getString(R.string.ContactsCursorLoader_notebook),
+                                      "",
+                                      ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+                                      "",
+                                      ContactRepository.DIVIDER_TYPE });
+    return notesHeader;
   }
 
   private Cursor getContactsHeaderCursor() {
@@ -282,6 +304,31 @@ public class ContactsCursorLoader extends CursorLoader {
       }
     }
     return recentConversations;
+  }
+
+  private Cursor getNotesCursors() {
+    ThreadDatabase threadDatabase = DatabaseFactory.getThreadDatabase(getContext());
+
+    MatrixCursor notes = new MatrixCursor(CONTACT_PROJECTION);
+    try (Cursor rawNotes = threadDatabase.getNoteList(0, 0)) {
+      ThreadDatabase.Reader reader = threadDatabase.readerFor(rawNotes);
+      ThreadRecord threadRecord;
+      while ((threadRecord = reader.getNext()) != null) {
+        Recipient recipient = threadRecord.getRecipient();
+
+        if (!filter.isEmpty() && !recipient.getDisplayName(getContext()).toLowerCase().contains(filter.toLowerCase())) {
+          continue;
+        }
+
+        notes.addRow(new Object[] { recipient.getId().serialize(),
+                                    recipient.getDisplayName(getContext()),
+                                    "",
+                                    ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
+                                    "",
+                                    ContactRepository.RECENT_TYPE });
+      }
+    }
+    return notes;
   }
 
   private List<Cursor> getContactsCursors() {
