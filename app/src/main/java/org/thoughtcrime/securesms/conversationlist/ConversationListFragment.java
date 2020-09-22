@@ -361,7 +361,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
               .setTextColor(Color.WHITE)
               .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE)
               .show();
-//      viewModel.onMegaphoneCompleted(Megaphones.Event.PINS_FOR_ALL);
+      viewModel.onMegaphoneCompleted(Megaphones.Event.PINS_FOR_ALL);
     }
   }
 
