@@ -31,4 +31,12 @@
   <string name="ContactsCursorLoader_notebook">Notebook</string>
   <string name="MediaSendActivity_note">Note</string>
   <string name="conversation__menu_note_settings">Note settings</string>
+  <string name="preferences__brown">Brown</string>
+  <string name="preferences__purple">Purple</string>
+  <string name="preferences__ultramarine">Ultramarine</string>
+  <string name="preferences__teal">Teal</string>
+  <string name="preferences__indigo">Indigo</string>
+  <string name="preferences__pink">Pink</string>
+  <string name="preferences__light_green">Light green</string>
+  <string name="preferences__blue_grey">Blue grey</string>
 </resources>

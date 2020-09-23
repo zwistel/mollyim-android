@@ -233,6 +233,8 @@
         <item name="conversation_list_compose_icon_tint">@color/core_white</item>
         <item name="conversation_list_camera_button_background">@color/core_white</item>
 
+        <item name="note_list_chip_bar_background">@color/core_grey_10</item>
+
         <item name="camera_icon_background_tint">@color/core_grey_02</item>
 
         <item name="fab_color">@color/core_ultramarine</item>
@@ -568,6 +570,8 @@
         <item name="conversation_list_camera_icon_tint">@color/core_white</item>
         <item name="conversation_list_compose_icon_tint">@color/core_white</item>
         <item name="conversation_list_camera_button_background">@color/core_grey_85</item>
+
+        <item name="note_list_chip_bar_background">@color/core_black</item>
 
         <item name="camera_icon_background_tint">@color/core_grey_75</item>
 
@@ -979,6 +983,11 @@
         <item name="recipient_view_safety_icon">@drawable/ic_info_solid_tinted_24</item>
         <item name="recipient_make_admin_icon">@drawable/ic_group_solid_24</item>
         <item name="recipient_remove_icon">@drawable/ic_leave_tinted_24</item>
+    </style>
+
+    <style name="NoteColor.Chip.Choice" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipIconVisible">true</item>
+        <item name="iconEndPadding">-8dp</item>
     </style>
 
     <style name="Signal.Chip.Action" parent="Widget.MaterialComponents.Chip.Action">

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:windowBackground">
+
+  <TextView
+      android:id="@+id/search_no_results"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="?attr/search_background"
+      android:gravity="center"
+      android:layout_margin="32dp"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="@string/SearchFragment_no_results" />
+
+
+  <HorizontalScrollView
+      android:id="@+id/chip_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:scrollbars="none"
+      app:layout_constraintTop_toTopOf="parent">
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="2dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:singleSelection="true"
+        app:singleLine="true">
+
+      <com.google.android.material.chip.Chip
+          android:id="@+id/red"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__red"
+          app:chipStrokeColor="@color/conversation_crimson"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__orange"
+          app:chipStrokeColor="@color/conversation_vermillion"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__brown"
+          app:chipStrokeColor="@color/conversation_burlap"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__green"
+          app:chipStrokeColor="@color/conversation_forest"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__light_green"
+          app:chipStrokeColor="@color/conversation_wintergreen"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__teal"
+          app:chipStrokeColor="@color/conversation_teal"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__blue"
+          app:chipStrokeColor="@color/conversation_blue"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__indigo"
+          app:chipStrokeColor="@color/conversation_indigo"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__purple"
+          app:chipStrokeColor="@color/conversation_violet"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__pink"
+          app:chipStrokeColor="@color/conversation_plumb"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__blue_grey"
+          app:chipStrokeColor="@color/conversation_taupe"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+      <com.google.android.material.chip.Chip
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/preferences__ultramarine"
+          app:chipStrokeColor="@color/conversation_ultramarine"
+          app:chipIcon="@drawable/circle_tintable_padded"
+          style="@style/NoteColor.Chip.Choice" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+  </HorizontalScrollView>
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/list"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:clipToPadding="false"
+      android:paddingBottom="68dp"
+      android:scrollbars="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/chip_layout"
+      tools:listitem="@layout/conversation_list_item_view"
+      tools:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

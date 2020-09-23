@@ -15,6 +15,7 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
+import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.conversationlist.model.Conversation;
 import org.thoughtcrime.securesms.conversationlist.model.SearchResult;
 import org.thoughtcrime.securesms.database.DatabaseContentProviders;
@@ -31,6 +32,8 @@ import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.util.livedata.LiveDataUtil;
 import org.thoughtcrime.securesms.util.paging.Invalidator;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 class ConversationListViewModel extends ViewModel {
@@ -87,13 +90,18 @@ class ConversationListViewModel extends ViewModel {
 
       MutableLiveData<ConversationList> updated = new MutableLiveData<>();
 
-      if (repository.isArchived()) {
-        updated.postValue(new ConversationList(conversation, 0, 0));
+      if (repository instanceof NoteListRepository) {
+        SignalExecutors.BOUNDED.execute(() -> {
+          List<MaterialColor> palette = DatabaseFactory.getThreadDatabase(application).getNoteColorList();
+          updated.postValue(new ConversationList(conversation, 0, 0, palette));
+        });
+      } else if (repository.isArchived()) {
+        updated.postValue(new ConversationList(conversation, 0, 0, Collections.emptyList()));
       } else {
         SignalExecutors.BOUNDED.execute(() -> {
           int archiveCount = DatabaseFactory.getThreadDatabase(application).getArchivedConversationListCount();
           int pinnedCount  = DatabaseFactory.getThreadDatabase(application).getPinnedConversationListCount();
-          updated.postValue(new ConversationList(conversation, archiveCount, pinnedCount));
+          updated.postValue(new ConversationList(conversation, archiveCount, pinnedCount, Collections.emptyList()));
         });
       }
 
@@ -185,11 +193,13 @@ class ConversationListViewModel extends ViewModel {
     private final PagedList<Conversation> conversations;
     private final int                     archivedCount;
     private final int                     pinnedCount;
+    private final List<MaterialColor>     palette;
 
-    ConversationList(PagedList<Conversation> conversations, int archivedCount, int pinnedCount) {
+    ConversationList(PagedList<Conversation> conversations, int archivedCount, int pinnedCount, List<MaterialColor> palette) {
       this.conversations = conversations;
       this.archivedCount = archivedCount;
       this.pinnedCount   = pinnedCount;
+      this.palette       = palette;
     }
 
     PagedList<Conversation> getConversations() {
@@ -206,6 +216,10 @@ class ConversationListViewModel extends ViewModel {
 
     boolean isEmpty() {
       return conversations.isEmpty() && archivedCount == 0;
+    }
+
+    List<MaterialColor> getPalette() {
+      return palette;
     }
   }
 }

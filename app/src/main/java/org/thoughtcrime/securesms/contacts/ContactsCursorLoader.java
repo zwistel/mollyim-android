@@ -314,7 +314,7 @@ public class ContactsCursorLoader extends CursorLoader {
     ThreadDatabase threadDatabase = DatabaseFactory.getThreadDatabase(getContext());
 
     MatrixCursor notes = new MatrixCursor(CONTACT_PROJECTION);
-    try (Cursor rawNotes = threadDatabase.getNoteList(0, 0)) {
+    try (Cursor rawNotes = threadDatabase.getNoteList(0, 0, null)) {
       ThreadDatabase.Reader reader = threadDatabase.readerFor(rawNotes);
       ThreadRecord threadRecord;
       while ((threadRecord = reader.getNext()) != null) {

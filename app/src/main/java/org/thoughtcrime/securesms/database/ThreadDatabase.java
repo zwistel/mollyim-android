@@ -34,6 +34,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 import org.jsoup.helper.StringUtil;
 import org.signal.storageservice.protos.groups.local.DecryptedGroup;
 import org.signal.storageservice.protos.groups.local.DecryptedMember;
+import org.thoughtcrime.securesms.color.MaterialColor;
 import org.thoughtcrime.securesms.database.RecipientDatabase.RecipientSettings;
 import org.thoughtcrime.securesms.database.MessageDatabase.MarkedMessageInfo;
 import org.thoughtcrime.securesms.database.helpers.SQLCipherOpenHelper;
@@ -639,8 +640,12 @@ public class ThreadDatabase extends Database {
     return getConversationList(createQuery(ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + NOTE_WHERE_NOT, offset, limit, false));
   }
 
-  public Cursor getNoteList(long offset, long limit) {
-    return getConversationList(createQuery(ARCHIVED + " = 0 AND " + NOTE_WHERE, NOTE_ORDER_BY, offset, limit, false));
+  public Cursor getNoteList(long offset, long limit, String color) {
+    if (color != null) {
+      return getConversationList(createQuery(ARCHIVED + " = 0 AND " + NOTE_WHERE + " AND " + RecipientDatabase.COLOR + " = ?", NOTE_ORDER_BY, offset, limit, false), SqlUtil.buildArgs(color));
+    } else {
+      return getConversationList(createQuery(ARCHIVED + " = 0 AND " + NOTE_WHERE, NOTE_ORDER_BY, offset, limit, false));
+    }
   }
 
   public Cursor getUnarchivedConversationList(boolean pinned, long offset, long limit) {
@@ -659,8 +664,12 @@ public class ThreadDatabase extends Database {
   }
 
   private Cursor getConversationList(String query) {
+    return getConversationList(query, null);
+  }
+
+  private Cursor getConversationList(String query, String[] args) {
     SQLiteDatabase db     = databaseHelper.getReadableDatabase();
-    Cursor         cursor = db.rawQuery(query, null);
+    Cursor         cursor = db.rawQuery(query, args);
 
     setNotifyConversationListListeners(cursor);
 
@@ -679,18 +688,48 @@ public class ThreadDatabase extends Database {
     return getConversationListCount(ARCHIVED + " = 0 AND " + MESSAGE_COUNT + " != 0 AND " + NOTE_WHERE_NOT);
   }
 
-  public int getNoteListCount() {
-    return getConversationListCount(ARCHIVED + " = 0 AND " + NOTE_WHERE);
+  public int getNoteListCount(@Nullable String color) {
+    if (color != null) {
+      return getConversationListCount(ARCHIVED + " = 0 AND " + NOTE_WHERE + " AND " + RecipientDatabase.COLOR + " = ?", SqlUtil.buildArgs(color));
+    } else {
+      return getConversationListCount(ARCHIVED + " = 0 AND " + NOTE_WHERE);
+    }
+  }
+
+  public List<MaterialColor> getNoteColorList() {
+    SQLiteDatabase db      = databaseHelper.getReadableDatabase();
+    String[]       columns = new String[] { RecipientDatabase.COLOR };
+    String         where   = ARCHIVED + " = 0 AND " + NOTE_WHERE;
+    String         table   = TABLE_NAME +
+        " LEFT OUTER JOIN " + RecipientDatabase.TABLE_NAME +
+        " ON " + TABLE_NAME + "." + RECIPIENT_ID + " = " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.ID;
+
+    List<MaterialColor> colorList  = new LinkedList<>();
+
+    try (Cursor cursor = db.query(table, columns, where, null, null, null, null)) {
+      while (cursor != null && cursor.moveToNext()) {
+        String serializedColor = cursor.getString(cursor.getColumnIndexOrThrow(RecipientDatabase.COLOR));
+        try {
+          colorList.add(MaterialColor.fromSerialized(serializedColor));
+        } catch (MaterialColor.UnknownColorException ignored) {}
+      }
+    }
+
+    return colorList;
   }
 
   private int getConversationListCount(String query) {
+    return getConversationListCount(query, null);
+  }
+
+  private int getConversationListCount(String query, String []args) {
     SQLiteDatabase db      = databaseHelper.getReadableDatabase();
     String[]       columns = new String[] { "COUNT(*)" };
     String         table   = TABLE_NAME +
         " LEFT OUTER JOIN " + RecipientDatabase.TABLE_NAME +
         " ON " + TABLE_NAME + "." + RECIPIENT_ID + " = " + RecipientDatabase.TABLE_NAME + "." + RecipientDatabase.ID;
 
-    try (Cursor cursor = db.query(table, columns, query, null, null, null, null)) {
+    try (Cursor cursor = db.query(table, columns, query, args, null, null, null)) {
       if (cursor != null && cursor.moveToFirst()) {
         return cursor.getInt(0);
       }

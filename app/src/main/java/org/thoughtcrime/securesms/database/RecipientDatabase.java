@@ -94,7 +94,7 @@ public class RecipientDatabase extends Database {
   private static final String CALL_VIBRATE             = "call_vibrate";
   private static final String NOTIFICATION_CHANNEL     = "notification_channel";
   private static final String MUTE_UNTIL               = "mute_until";
-  private static final String COLOR                    = "color";
+  public  static final String COLOR                    = "color";
   private static final String SEEN_INVITE_REMINDER     = "seen_invite_reminder";
   private static final String DEFAULT_SUBSCRIPTION_ID  = "default_subscription_id";
   private static final String MESSAGE_EXPIRATION_TIME  = "message_expiration_time";
@@ -1232,6 +1232,7 @@ public class RecipientDatabase extends Database {
     values.put(COLOR, color.serialize());
     if (update(id, values)) {
       Recipient.live(id).refresh();
+      notifyConversationListListeners();
     }
   }
 

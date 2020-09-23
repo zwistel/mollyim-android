@@ -768,7 +768,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
     defaultAdapter.submitList(conversationList.getConversations());
 
-    onPostSubmitList();
+    onPostSubmitList(conversationList);
   }
 
   protected void updateEmptyState(boolean isConversationEmpty) {
@@ -783,8 +783,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     }
   }
 
-  protected void onPostSubmitList() {
-  }
+  protected void onPostSubmitList(@NonNull ConversationListViewModel.ConversationList conversationList) {}
 
   @Override
   public void onConversationClick(Conversation conversation) {

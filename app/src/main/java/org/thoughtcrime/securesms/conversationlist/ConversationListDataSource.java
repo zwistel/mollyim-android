@@ -7,6 +7,7 @@ import android.database.MatrixCursor;
 import android.database.MergeCursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.paging.DataSource;
 import androidx.paging.PositionalDataSource;
@@ -134,20 +135,21 @@ abstract class ConversationListDataSource extends PositionalDataSource<Conversat
 
   static class NoteListDataSource extends ConversationListDataSource {
 
-    NoteListDataSource(@NonNull Context context, @NonNull Invalidator invalidator) {
+    private @Nullable String color;
+
+    NoteListDataSource(@NonNull Context context, @NonNull Invalidator invalidator, @Nullable String color) {
       super(context, invalidator);
+      this.color = color;
     }
 
     @Override
     protected int getTotalCount() {
-//      return threadDatabase.getNoteListCount();
-      return threadDatabase.getNoteListCount();
+      return threadDatabase.getNoteListCount(color);
     }
 
     @Override
     protected Cursor getCursor(long offset, long limit) {
-//      return threadDatabase.getNoteList(offset, limit);
-      return threadDatabase.getNoteList(offset, limit);
+      return threadDatabase.getNoteList(offset, limit, color);
     }
   }
 
