@@ -190,7 +190,9 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     searchEmptyState   = view.findViewById(R.id.search_no_results);
     megaphoneContainer = requireActivity().findViewById(R.id.megaphone_container);
 
-    reminderView.setOnDismissListener(this::updateReminders);
+    if (reminderView != null) {
+      reminderView.setOnDismissListener(this::updateReminders);
+    }
 
     list.setLayoutManager(new LinearLayoutManager(requireActivity()));
     list.setItemAnimator(new DeleteItemAnimator());
@@ -522,7 +524,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     viewModel.onMegaphoneVisible(megaphone);
   }
 
-  private void updateReminders() {
+  protected void updateReminders() {
     Context context = requireContext();
 
     SimpleTask.run(getViewLifecycleOwner().getLifecycle(), () -> {

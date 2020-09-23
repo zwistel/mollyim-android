@@ -58,6 +58,9 @@ public class NoteListFragment extends ConversationListFragment implements Action
   }
 
   @Override
+  protected void updateReminders() {}
+
+  @Override
   public void onUpdateFab(ImageView fab) {
     fab.setOnClickListener(this::onFabClick);
     fab.setImageResource(R.drawable.ic_add_white_original_24dp);

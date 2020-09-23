@@ -78,6 +78,9 @@ public class ConversationListArchiveFragment extends ConversationListFragment im
   protected void onMegaphoneChanged(@Nullable Megaphone megaphone) {}
 
   @Override
+  protected void updateReminders() {}
+
+  @Override
   protected @StringRes int getArchivedSnackbarTitleRes() {
     return R.plurals.ConversationListFragment_moved_conversations_to_inbox;
   }
