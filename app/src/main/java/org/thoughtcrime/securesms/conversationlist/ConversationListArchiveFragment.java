@@ -64,7 +64,7 @@ public class ConversationListArchiveFragment extends ConversationListFragment im
   }
 
   @Override
-  protected void onPostSubmitList() {
+  protected void updateEmptyState(boolean isConversationEmpty) {
     list.setVisibility(View.VISIBLE);
     emptyState.setVisibility(View.GONE);
   }

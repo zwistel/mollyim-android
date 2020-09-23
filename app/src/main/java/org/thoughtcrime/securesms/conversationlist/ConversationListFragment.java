@@ -769,7 +769,7 @@ public class ConversationListFragment extends MainFragment implements ActionMode
     onPostSubmitList();
   }
 
-  private void updateEmptyState(boolean isConversationEmpty) {
+  protected void updateEmptyState(boolean isConversationEmpty) {
     if (isConversationEmpty) {
       Log.i(TAG, "Received an empty data set.");
       list.setVisibility(View.INVISIBLE);
