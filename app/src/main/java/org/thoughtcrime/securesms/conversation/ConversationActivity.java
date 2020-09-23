@@ -839,6 +839,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
         hideMenuItem(menu, R.id.menu_call_insecure);
       }
       if (recipient.get().isNote()) {
+        menu.findItem(R.id.menu_conversation_settings).setTitle(R.string.conversation__menu_note_settings);
         hideMenuItem(menu, R.id.menu_add_to_contacts);
         hideMenuItem(menu, R.id.menu_reset_secure_session);
         hideMenuItem(menu, R.id.menu_add_shortcut);
