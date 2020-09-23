@@ -643,12 +643,14 @@ public class ConversationListFragment extends MainFragment implements ActionMode
 
       @Override
       protected void executeAction(@Nullable Void parameter) {
-        archiveThreads(selectedConversations);
+        if (!isArchived()) archiveThreads(selectedConversations);
+        else               reverseArchiveThreads(selectedConversations);
       }
 
       @Override
       protected void reverseAction(@Nullable Void parameter) {
-        reverseArchiveThreads(selectedConversations);
+        if (!isArchived()) reverseArchiveThreads(selectedConversations);
+        else               archiveThreads(selectedConversations);
       }
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
