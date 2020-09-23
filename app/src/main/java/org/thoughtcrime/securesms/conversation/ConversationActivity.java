@@ -841,6 +841,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
       if (recipient.get().isNote()) {
         hideMenuItem(menu, R.id.menu_add_to_contacts);
         hideMenuItem(menu, R.id.menu_reset_secure_session);
+        hideMenuItem(menu, R.id.menu_add_shortcut);
       }
 
       hideMenuItem(menu, R.id.menu_mute_notifications);
@@ -1213,7 +1214,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
                                           @NonNull Recipient recipient)
   {
     IconCompat icon = IconCompat.createWithAdaptiveBitmap(bitmap);
-    String     name = recipient.isConversationToSelf() ? context.getString(R.string.note_to_self)
+    String     name = recipient.isLocalNumber() ? context.getString(R.string.note_to_self)
                                                   : recipient.getDisplayName(context);
 
     ShortcutInfoCompat shortcutInfoCompat = new ShortcutInfoCompat.Builder(context, recipient.getId().serialize() + '-' + System.currentTimeMillis())
