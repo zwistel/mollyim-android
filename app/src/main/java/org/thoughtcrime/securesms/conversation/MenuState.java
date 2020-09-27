@@ -101,7 +101,7 @@ final class MenuState {
                                              ((MediaMmsMessageRecord)messageRecord).containsMediaSlide() &&
                                              ((MediaMmsMessageRecord)messageRecord).getSlideDeck().getStickerSlide() == null)
              .shouldShowForwardAction(!actionMessage && !sharedContact && !viewOnce && !remoteDelete)
-             .shouldShowDetailsAction(!actionMessage)
+             .shouldShowDetailsAction(!actionMessage && !messageRecord.getRecipient().isNote())
              .shouldShowReplyAction(canReplyToMessage(actionMessage, messageRecord, shouldShowMessageRequest));
     }
 
@@ -116,6 +116,7 @@ final class MenuState {
            !messageRecord.isFailed()       &&
            !isDisplayingMessageRequest     &&
            messageRecord.isSecure()        &&
+           !messageRecord.getRecipient().isNote() &&
            !messageRecord.getRecipient().isBlocked();
   }
 

@@ -1228,6 +1228,7 @@ public class ConversationFragment extends LoggingFragment {
           !messageRecord.isRemoteDelete()                     &&
           !messageRecord.isUpdate()                           &&
           !recipient.get().isBlocked()                        &&
+          !recipient.get().isNote()                           &&
           !messageRequestViewModel.shouldShowMessageRequest() &&
           ((ConversationAdapter) list.getAdapter()).getSelectedItems().isEmpty())
       {
