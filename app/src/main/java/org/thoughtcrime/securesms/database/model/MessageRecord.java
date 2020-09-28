@@ -244,6 +244,10 @@ public abstract class MessageRecord extends DisplayRecord {
     return SmsDatabase.Types.isPushType(type) && !SmsDatabase.Types.isForcedSms(type);
   }
 
+  public boolean isNote() {
+    return getIndividualRecipient().isNote();
+  }
+
   public long getTimestamp() {
     if (isPush() && getDateSent() < getDateReceived()) {
       return getDateSent();

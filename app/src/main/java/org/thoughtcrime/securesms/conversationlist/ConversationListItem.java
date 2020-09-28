@@ -365,7 +365,7 @@ public final class ConversationListItem extends RelativeLayout
   }
 
   private void setStatusIcons(ThreadRecord thread) {
-    if (!thread.isOutgoing() || thread.isOutgoingCall() || thread.isVerificationStatusChange()) {
+    if (!thread.isOutgoing() || thread.isOutgoingCall() || thread.isVerificationStatusChange() || recipient.get().isNote()) {
       deliveryStatusIndicator.setNone();
       alertView.setNone();
     } else if (thread.isFailed()) {

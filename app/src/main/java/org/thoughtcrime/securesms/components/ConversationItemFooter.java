@@ -157,6 +157,7 @@ public class ConversationItemFooter extends LinearLayout {
   private void presentDeliveryStatus(@NonNull MessageRecord messageRecord) {
     if (!messageRecord.isFailed() && !messageRecord.isPendingInsecureSmsFallback()) {
       if      (!messageRecord.isOutgoing())  deliveryStatusView.setNone();
+      else if (messageRecord.isNote())       deliveryStatusView.setNone();
       else if (messageRecord.isPending())    deliveryStatusView.setPending();
       else if (messageRecord.isRemoteRead()) deliveryStatusView.setRead();
       else if (messageRecord.isDelivered())  deliveryStatusView.setDelivered();
