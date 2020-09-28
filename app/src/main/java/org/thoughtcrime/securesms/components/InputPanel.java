@@ -184,6 +184,8 @@ public class InputPanel extends LinearLayout
   }
 
   public void clearQuote() {
+    composeText.setText("");
+
     if (quoteAnimator != null) {
       quoteAnimator.cancel();
     }
