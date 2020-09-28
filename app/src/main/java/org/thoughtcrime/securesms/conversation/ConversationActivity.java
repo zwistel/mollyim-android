@@ -2201,7 +2201,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
   protected ListenableFuture<Long> saveDraft() {
     final SettableFuture<Long> future = new SettableFuture<>();
 
-    if (this.recipient == null) {
+    if (recipient == null || isEditingNoteMessage()) {
       future.set(threadId);
       return future;
     }
@@ -2327,6 +2327,10 @@ public class ConversationActivity extends PassphraseRequiredActivity
     return recipient.get().isLocalNumber();
   }
 
+  private boolean isEditingNoteMessage() {
+    return recipient.get().isNote() && inputPanel.getQuote().isPresent();
+  }
+
   private boolean isGroupConversation() {
     return getRecipient() != null && getRecipient().isGroup();
   }
@@ -2433,6 +2437,8 @@ public class ConversationActivity extends PassphraseRequiredActivity
         handleManualMmsRequired();
       } else if (!forceSms && (identityRecords.isUnverified(true) || identityRecords.isUntrusted(true))) {
         handleRecentSafetyNumberChange();
+      } else if (isEditingNoteMessage()) {
+        editNote();
       } else if (isMediaMessage) {
         sendMediaMessage(forceSms, expiresIn, false, subscriptionId, initiating);
       } else {
@@ -2605,9 +2611,38 @@ public class ConversationActivity extends PassphraseRequiredActivity
                .execute();
   }
 
+  private void editNote() throws InvalidMessageException {
+    Optional<QuoteModel> quote = inputPanel.getQuote();
+
+    if (!isSecureText || !quote.isPresent()) {
+      return;
+    }
+
+    final long   quoteId     = quote.get().getId();
+    final String messageBody = getMessage();
+
+    inputPanel.clearQuote();
+    silentlySetComposeText("");
+
+    MessageRecord messageRecord = DatabaseFactory.getMmsSmsDatabase(this).getMessageFor(quoteId, recipient.getId());
+
+    if (messageRecord != null) {
+      SimpleTask.run(() -> DatabaseFactory.getSmsDatabase(this).updateMessageBody(messageRecord.getId(), messageBody), result -> {});
+    } else {
+      Toast.makeText(this, R.string.ConversationFragment_quoted_message_not_found, Toast.LENGTH_SHORT).show();
+    }
+  }
+
   private void showDefaultSmsPrompt() {}
 
   private void updateToggleButtonState() {
+    if (isEditingNoteMessage()) {
+      buttonToggle.display(sendButton);
+      quickAttachmentToggle.hide();
+      inlineAttachmentToggle.hide();
+      return;
+    }
+
     if (inputPanel.isRecordingInLockedMode()) {
       buttonToggle.display(sendButton);
       quickAttachmentToggle.show();
@@ -3130,6 +3165,20 @@ public class ConversationActivity extends PassphraseRequiredActivity
     }
 
     inputPanel.clickOnComposeInput();
+  }
+
+  @Override
+  public void handleEditNote(ConversationMessage conversationMessage) {
+    MessageRecord messageRecord = conversationMessage.getMessageRecord();
+
+    inputPanel.setQuote(GlideApp.with(this),
+                        messageRecord.getDateSent(),
+                        messageRecord.getIndividualRecipient(),
+                        conversationMessage.getDisplayBody(this),
+                        new SlideDeck());
+
+    composeText.setText("");
+    composeText.append(conversationMessage.getDisplayBody(this));
   }
 
   @Override

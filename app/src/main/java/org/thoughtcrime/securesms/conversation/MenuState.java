@@ -11,6 +11,7 @@ import java.util.Set;
 final class MenuState {
 
   private final boolean forward;
+  private final boolean editNote;
   private final boolean reply;
   private final boolean details;
   private final boolean saveAttachment;
@@ -18,12 +19,17 @@ final class MenuState {
   private final boolean copy;
 
   private MenuState(@NonNull Builder builder) {
+    editNote       = builder.editNote;
     forward        = builder.forward;
     reply          = builder.reply;
     details        = builder.details;
     saveAttachment = builder.saveAttachment;
     resend         = builder.resend;
     copy           = builder.copy;
+  }
+
+  boolean shouldShowEditNoteAction() {
+    return editNote;
   }
 
   boolean shouldShowForwardAction() {
@@ -100,6 +106,9 @@ final class MenuState {
                                              !messageRecord.isMmsNotification()                          &&
                                              ((MediaMmsMessageRecord)messageRecord).containsMediaSlide() &&
                                              ((MediaMmsMessageRecord)messageRecord).getSlideDeck().getStickerSlide() == null)
+             .shouldShowEditNoteAction(!actionMessage &&
+                                       !messageRecord.isMms() &&
+                                       messageRecord.getRecipient().isNote())
              .shouldShowForwardAction(!actionMessage && !sharedContact && !viewOnce && !remoteDelete)
              .shouldShowDetailsAction(!actionMessage && !messageRecord.getRecipient().isNote())
              .shouldShowReplyAction(canReplyToMessage(actionMessage, messageRecord, shouldShowMessageRequest));
@@ -134,12 +143,18 @@ final class MenuState {
 
   private final static class Builder {
 
+    private boolean editNote;
     private boolean forward;
     private boolean reply;
     private boolean details;
     private boolean saveAttachment;
     private boolean resend;
     private boolean copy;
+
+    @NonNull Builder shouldShowEditNoteAction(boolean editNote) {
+      this.editNote = editNote;
+      return this;
+    }
 
     @NonNull Builder shouldShowForwardAction(boolean forward) {
       this.forward = forward;

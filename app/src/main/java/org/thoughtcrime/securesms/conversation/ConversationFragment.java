@@ -577,6 +577,7 @@ public class ConversationFragment extends LoggingFragment {
 
     MenuState menuState = MenuState.getMenuState(Stream.of(messages).map(ConversationMessage::getMessageRecord).collect(Collectors.toSet()), messageRequestViewModel.shouldShowMessageRequest());
 
+    menu.findItem(R.id.menu_context_edit_note).setVisible(menuState.shouldShowEditNoteAction());
     menu.findItem(R.id.menu_context_forward).setVisible(menuState.shouldShowForwardAction());
     menu.findItem(R.id.menu_context_reply).setVisible(menuState.shouldShowReplyAction());
     menu.findItem(R.id.menu_context_details).setVisible(menuState.shouldShowDetailsAction());
@@ -877,6 +878,15 @@ public class ConversationFragment extends LoggingFragment {
     listener.handleReplyMessage(message);
   }
 
+  private void handleEditNote(final ConversationMessage message) {
+    if (getActivity() != null) {
+      //noinspection ConstantConditions
+      ((AppCompatActivity) getActivity()).getSupportActionBar().collapseActionView();
+    }
+
+    listener.handleEditNote(message);
+  }
+
   private void handleSaveAttachment(final MediaMmsMessageRecord message) {
     if (message.isViewOnce()) {
       throw new AssertionError("Cannot save a view-once message.");
@@ -1118,6 +1128,7 @@ public class ConversationFragment extends LoggingFragment {
   public interface ConversationFragmentListener {
     void setThreadId(long threadId);
     void handleReplyMessage(ConversationMessage conversationMessage);
+    void handleEditNote(ConversationMessage conversationMessage);
     void onMessageActionToolbarOpened();
     void onForwardClicked();
     void onMessageRequest(@NonNull MessageRequestViewModel viewModel);
@@ -1545,6 +1556,10 @@ public class ConversationFragment extends LoggingFragment {
           return true;
         case R.id.menu_context_details:
           handleDisplayDetails(getSelectedConversationMessage());
+          actionMode.finish();
+          return true;
+        case R.id.menu_context_edit_note:
+          handleEditNote(getSelectedConversationMessage());
           actionMode.finish();
           return true;
         case R.id.menu_context_forward:

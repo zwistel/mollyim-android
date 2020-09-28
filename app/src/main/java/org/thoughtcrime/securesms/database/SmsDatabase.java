@@ -611,6 +611,10 @@ public class SmsDatabase extends MessageDatabase {
     return updateMessageBodyAndType(messageId, body, Types.TOTAL_MASK, type);
   }
 
+  public Pair<Long, Long> updateMessageBody(long messageId, String body) {
+    return updateMessageBodyAndType(messageId, body, 0, 0);
+  }
+
   private Pair<Long, Long> updateMessageBodyAndType(long messageId, String body, long maskOff, long maskOn) {
     SQLiteDatabase db = databaseHelper.getWritableDatabase();
     db.execSQL("UPDATE " + TABLE_NAME + " SET " + BODY + " = ?, " +

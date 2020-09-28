@@ -383,6 +383,11 @@ public class MmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public Pair<Long, Long> updateMessageBody(long messageId, String body) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public @NonNull Pair<Long, Long> insertReceivedCall(@NonNull RecipientId address) {
     throw new UnsupportedOperationException();
   }

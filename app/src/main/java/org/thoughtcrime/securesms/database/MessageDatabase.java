@@ -120,6 +120,7 @@ public abstract class MessageDatabase extends Database implements MmsSmsColumns 
   public abstract List<MarkedMessageInfo> setMessagesReadSince(long threadId, long timestamp);
   public abstract List<MarkedMessageInfo> setAllMessagesRead();
   public abstract Pair<Long, Long> updateBundleMessageBody(long messageId, String body);
+  public abstract Pair<Long, Long> updateMessageBody(long messageId, String body);
 
   public abstract void addFailures(long messageId, List<NetworkFailure> failure);
   public abstract void removeFailure(long messageId, NetworkFailure failure);

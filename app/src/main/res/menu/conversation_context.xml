@@ -37,4 +37,10 @@
         android:icon="?menu_forward_icon"
         app:showAsAction="always" />
 
+    <item android:title="@string/conversation_context__menu_edit_note"
+        android:id="@+id/menu_context_edit_note"
+        android:visible="false"
+        android:icon="?menu_edit_note_icon"
+        app:showAsAction="always" />
+
 </menu>

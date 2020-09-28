@@ -394,6 +394,7 @@
         <item name="menu_multi_select_icon">@drawable/ic_select_24</item>
         <item name="menu_archive_icon">@drawable/ic_archive_white_24dp</item>
         <item name="menu_edit_icon">@drawable/ic_compose_outline_tinted_24</item>
+        <item name="menu_edit_note_icon">@drawable/ic_compose_outline_white_24</item>
         <item name="menu_pin_icon">@drawable/ic_pin_outline_24</item>
         <item name="menu_unpin_icon">@drawable/ic_unpin_outline_24</item>
 
@@ -729,6 +730,7 @@
         <item name="menu_multi_select_icon">@drawable/ic_select_24</item>
         <item name="menu_archive_icon">@drawable/ic_archive_white_24dp</item>
         <item name="menu_edit_icon">@drawable/ic_compose_solid_tinted_24</item>
+        <item name="menu_edit_note_icon">@drawable/ic_compose_solid_white_24</item>
         <item name="menu_pin_icon">@drawable/ic_pin_solid_24</item>
         <item name="menu_unpin_icon">@drawable/ic_unpin_solid_24</item>
 

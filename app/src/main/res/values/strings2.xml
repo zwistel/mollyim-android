@@ -39,4 +39,6 @@
   <string name="preferences__pink">Pink</string>
   <string name="preferences__light_green">Light green</string>
   <string name="preferences__blue_grey">Blue grey</string>
+  <string name="conversation_context__menu_edit_note">Edit note</string>
+  <string name="QuoteView_editing_note">Editing note</string>
 </resources>
