@@ -31,6 +31,17 @@
             android:alpha="0"
             android:layout_alignTop="@id/body_bubble"
             android:layout_alignBottom="@id/body_bubble"
+            android:layout_alignEnd="@id/body_bubble" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/forward_icon"
+            android:layout_width="@dimen/conversation_item_reply_size"
+            android:layout_height="@dimen/conversation_item_reply_size"
+            app:srcCompat="?menu_forward_icon"
+            android:tint="?compose_icon_tint"
+            android:alpha="0"
+            android:layout_alignTop="@id/body_bubble"
+            android:layout_alignBottom="@id/body_bubble"
             android:layout_alignStart="@id/body_bubble" />
 
         <FrameLayout

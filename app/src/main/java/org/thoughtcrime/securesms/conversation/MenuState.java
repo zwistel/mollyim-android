@@ -63,7 +63,6 @@ final class MenuState {
     Builder builder       = new Builder();
     boolean actionMessage = false;
     boolean hasText       = false;
-    boolean sharedContact = false;
     boolean viewOnce      = false;
     boolean remoteDelete  = false;
 
@@ -75,10 +74,6 @@ final class MenuState {
 
       if (messageRecord.getBody().length() > 0) {
         hasText = true;
-      }
-
-      if (messageRecord.isMms() && !((MmsMessageRecord) messageRecord).getSharedContacts().isEmpty()) {
-        sharedContact = true;
       }
 
       if (messageRecord.isViewOnce()) {
@@ -109,7 +104,7 @@ final class MenuState {
              .shouldShowEditNoteAction(!actionMessage &&
                                        !messageRecord.isMms() &&
                                        messageRecord.getRecipient().isNote())
-             .shouldShowForwardAction(!actionMessage && !sharedContact && !viewOnce && !remoteDelete)
+             .shouldShowForwardAction(canForwardMessage(actionMessage, messageRecord))
              .shouldShowDetailsAction(!actionMessage && !messageRecord.getRecipient().isNote())
              .shouldShowReplyAction(canReplyToMessage(actionMessage, messageRecord, shouldShowMessageRequest));
     }
@@ -127,6 +122,19 @@ final class MenuState {
            messageRecord.isSecure()        &&
            !messageRecord.getRecipient().isNote() &&
            !messageRecord.getRecipient().isBlocked();
+  }
+
+  static boolean canForwardMessage(boolean actionMessage, @NonNull MessageRecord messageRecord) {
+    boolean sharedContact = false;
+
+    if (messageRecord.isMms() && !((MmsMessageRecord) messageRecord).getSharedContacts().isEmpty()) {
+      sharedContact = true;
+    }
+
+    return !actionMessage &&
+           !sharedContact &&
+           !messageRecord.isViewOnce() &&
+           !messageRecord.isRemoteDelete();
   }
 
   static boolean isActionMessage(@NonNull MessageRecord messageRecord) {

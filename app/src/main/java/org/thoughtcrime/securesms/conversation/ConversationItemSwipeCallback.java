@@ -25,6 +25,7 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
   private boolean canTriggerSwipe;
   private float   latestDownX;
   private float   latestDownY;
+  private int     latestDirection;
 
   private final SwipeAvailabilityProvider     swipeAvailabilityProvider;
   private final ConversationItemTouchListener itemTouchListener;
@@ -33,7 +34,7 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
   ConversationItemSwipeCallback(@NonNull SwipeAvailabilityProvider swipeAvailabilityProvider,
                                 @NonNull OnSwipeListener onSwipeListener)
   {
-    super(0, ItemTouchHelper.END);
+    super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
     this.itemTouchListener          = new ConversationItemTouchListener(this::updateLatestDownCoordinate);
     this.swipeAvailabilityProvider  = swipeAvailabilityProvider;
     this.onSwipeListener            = onSwipeListener;
@@ -56,14 +57,24 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
 
   @Override
   public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+    shouldTriggerSwipeFeedback = true;
+
+    if ((getSwipeMessageDirs(viewHolder) & direction) != direction) {
+      return;
+    }
+
+    ConversationItem    item          = ((ConversationItem) viewHolder.itemView);
+    ConversationMessage messageRecord = item.getConversationMessage();
+    onSwipeListener.onSwipedMessage(messageRecord, direction);
   }
 
   @Override
   public int getSwipeDirs(@NonNull RecyclerView recyclerView,
                           @NonNull RecyclerView.ViewHolder viewHolder)
   {
-    if (cannotSwipeViewHolder(viewHolder)) return 0;
-    return super.getSwipeDirs(recyclerView, viewHolder);
+    int defaultSwipeDirs = super.getSwipeDirs(recyclerView, viewHolder);
+    int availSwipeDirs   = getSwipeMessageDirs(viewHolder);
+    return defaultSwipeDirs & availSwipeDirs;
   }
 
   @Override
@@ -82,24 +93,23 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
           @NonNull RecyclerView.ViewHolder viewHolder,
           float dx, float dy, int actionState, boolean isCurrentlyActive)
   {
-    if (cannotSwipeViewHolder(viewHolder)) return;
+    final int dirFlag = getHorizontalDirFlag(dx);
 
-    float   sign              = getSignFromDirection(viewHolder.itemView);
-    boolean isCorrectSwipeDir = sameSign(dx, sign);
-
-    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && isCorrectSwipeDir) {
+    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && (getSwipeMessageDirs(viewHolder) & dirFlag) == dirFlag) {
+      float sign = (dirFlag == ItemTouchHelper.LEFT) ? -1f : 1f;
       ConversationSwipeAnimationHelper.update((ConversationItem) viewHolder.itemView, Math.abs(dx), sign);
       handleSwipeFeedback((ConversationItem) viewHolder.itemView, Math.abs(dx));
       if (canTriggerSwipe) {
-        setTouchListener(recyclerView, viewHolder, Math.abs(dx));
+        setTouchListener(recyclerView, viewHolder, dx);
       }
-    } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE || dx == 0) {
+    } else {
       ConversationSwipeAnimationHelper.update((ConversationItem) viewHolder.itemView, 0, 1);
     }
 
-    if (dx == 0) {
+    if (dx == 0 || dirFlag != latestDirection) {
       shouldTriggerSwipeFeedback = true;
       canTriggerSwipe            = true;
+      latestDirection            = dirFlag;
     }
   }
 
@@ -109,15 +119,6 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
       ConversationSwipeAnimationHelper.trigger(item);
       shouldTriggerSwipeFeedback = false;
     }
-  }
-
-  private void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder) {
-    if (cannotSwipeViewHolder(viewHolder)) return;
-
-    ConversationItem    item          = ((ConversationItem) viewHolder.itemView);
-    ConversationMessage messageRecord = item.getConversationMessage();
-
-    onSwipeListener.onSwipe(messageRecord);
   }
 
   @SuppressLint("ClickableViewAccessibility")
@@ -146,9 +147,9 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
                                    @NonNull RecyclerView.ViewHolder viewHolder,
                                    float dx)
   {
-    if (dx > SWIPE_SUCCESS_DX) {
+    if (Math.abs(dx) > SWIPE_SUCCESS_DX) {
       canTriggerSwipe = false;
-      onSwiped(viewHolder);
+      onSwiped(viewHolder, getHorizontalDirFlag(dx));
       if (shouldTriggerSwipeFeedback) {
         vibrate(viewHolder.itemView.getContext());
       }
@@ -161,16 +162,18 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
     if (AccessibilityUtil.areAnimationsDisabled(viewHolder.itemView.getContext())) {
       ConversationSwipeAnimationHelper.update((ConversationItem) viewHolder.itemView,
                                               0f,
-                                              getSignFromDirection(viewHolder.itemView));
+                                              1);
     }
   }
 
-  private boolean cannotSwipeViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
-    if (!(viewHolder.itemView instanceof ConversationItem)) return true;
+  private int getSwipeMessageDirs(@NonNull RecyclerView.ViewHolder viewHolder) {
+    if (!(viewHolder.itemView instanceof ConversationItem)) return 0;
 
     ConversationItem item = ((ConversationItem) viewHolder.itemView);
-    return !swipeAvailabilityProvider.isSwipeAvailable(item.getConversationMessage()) ||
-           item.disallowSwipe(latestDownX, latestDownY);
+
+    if (item.disallowSwipe(latestDownX, latestDownY)) return 0;
+
+    return swipeAvailabilityProvider.getSwipeMessageDirs(item.getConversationMessage());
   }
 
   private void updateLatestDownCoordinate(float x, float y) {
@@ -178,12 +181,8 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
     latestDownY = y;
   }
 
-  private static float getSignFromDirection(@NonNull View view) {
-    return view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL ? -1f : 1f;
-  }
-
-  private static boolean sameSign(float dX, float sign) {
-    return dX * sign > 0;
+  private static int getHorizontalDirFlag(float dX) {
+    return dX > 0 ? ItemTouchHelper.RIGHT : ItemTouchHelper.LEFT;
   }
 
   private static void vibrate(@NonNull Context context) {
@@ -192,10 +191,10 @@ class ConversationItemSwipeCallback extends ItemTouchHelper.SimpleCallback {
   }
 
   interface SwipeAvailabilityProvider {
-    boolean isSwipeAvailable(ConversationMessage conversationMessage);
+    int getSwipeMessageDirs(ConversationMessage conversationMessage);
   }
 
   interface OnSwipeListener {
-    void onSwipe(ConversationMessage conversationMessage);
+    void onSwipedMessage(ConversationMessage conversationMessage, int direction);
   }
 }

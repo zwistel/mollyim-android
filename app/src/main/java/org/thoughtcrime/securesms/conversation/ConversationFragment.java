@@ -53,6 +53,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -227,9 +228,26 @@ public class ConversationFragment extends LoggingFragment {
     typingView = (ConversationTypingView) inflater.inflate(R.layout.conversation_typing_view, container, false);
 
     new ConversationItemSwipeCallback(
-            conversationMessage -> actionMode == null &&
-                                   MenuState.canReplyToMessage(MenuState.isActionMessage(conversationMessage.getMessageRecord()), conversationMessage.getMessageRecord(), messageRequestViewModel.shouldShowMessageRequest()),
-            this::handleReplyMessage
+            (conversationMessage) -> {
+              int dirFlag = 0;
+              if (actionMode == null) {
+                if (MenuState.canReplyToMessage(MenuState.isActionMessage(conversationMessage.getMessageRecord()), conversationMessage.getMessageRecord(),
+                    messageRequestViewModel.shouldShowMessageRequest())) {
+                  dirFlag |= ItemTouchHelper.LEFT;
+                }
+                if (MenuState.canForwardMessage(MenuState.isActionMessage(conversationMessage.getMessageRecord()), conversationMessage.getMessageRecord())) {
+                  dirFlag |= ItemTouchHelper.RIGHT;
+                }
+              }
+              return dirFlag;
+            },
+            (conversationMessage, direction) -> {
+              if (direction == ItemTouchHelper.LEFT) {
+                handleReplyMessage(conversationMessage);
+              } else {
+                handleForwardMessage(conversationMessage);
+              }
+            }
     ).attachToRecyclerView(list);
 
     setupListLayoutListeners();

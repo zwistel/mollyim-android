@@ -158,6 +158,7 @@ public class ConversationItem extends LinearLayout implements BindableConversati
 
             protected ConversationItemBodyBubble bodyBubble;
             protected View                       reply;
+            protected View                       forward;
   @Nullable protected ViewGroup                  contactPhotoHolder;
   @Nullable private   QuoteView                  quoteView;
             private   EmojiTextView              bodyText;
@@ -239,6 +240,7 @@ public class ConversationItem extends LinearLayout implements BindableConversati
     this.quoteView               =            findViewById(R.id.quote_view);
     this.container               =            findViewById(R.id.container);
     this.reply                   =            findViewById(R.id.reply_icon);
+    this.forward                 =            findViewById(R.id.forward_icon);
     this.reactionsView           =            findViewById(R.id.reactions_view);
 
     setOnClickListener(new ClickListener(null));

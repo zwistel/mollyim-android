@@ -12,8 +12,8 @@ import org.thoughtcrime.securesms.util.Util;
 
 final class ConversationSwipeAnimationHelper {
 
-  static final float TRIGGER_DX = dpToPx(64);
-  static final float MAX_DX     = dpToPx(96);
+  static final float TRIGGER_DX = dpToPx(40);
+  static final float MAX_DX     = dpToPx(60);
 
   private static final float REPLY_SCALE_OVERSHOOT          = 1.8f;
   private static final float REPLY_SCALE_MAX                = 1.2f;
@@ -34,12 +34,14 @@ final class ConversationSwipeAnimationHelper {
 
     updateBodyBubbleTransition(conversationItem.bodyBubble, dx, sign);
     updateReactionsTransition(conversationItem.reactionsView, dx, sign);
-    updateReplyIconTransition(conversationItem.reply, dx, progress, sign);
+    updateReplyIconTransition(sign > 0 ? conversationItem.forward : conversationItem.reply, dx, progress, sign);
+    updateReplyIconTransition(sign < 0 ? conversationItem.forward : conversationItem.reply, 0, 0, 1);
     updateContactPhotoHolderTransition(conversationItem.contactPhotoHolder, progress, sign);
   }
 
   public static void trigger(@NonNull ConversationItem conversationItem) {
     triggerReplyIcon(conversationItem.reply);
+    triggerReplyIcon(conversationItem.forward);
   }
 
   private static void updateBodyBubbleTransition(@NonNull View bodyBubble, float dx, float sign) {
