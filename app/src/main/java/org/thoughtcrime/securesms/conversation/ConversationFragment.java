@@ -219,6 +219,8 @@ public class ConversationFragment extends LoggingFragment {
     topLoadMoreView       = (ViewSwitcher) inflater.inflate(R.layout.load_more_header, container, false);
     bottomLoadMoreView    = (ViewSwitcher) inflater.inflate(R.layout.load_more_header, container, false);
 
+    conversationBanner.setTitleOnClickListener(listener::onBannerTitleClicked);
+
     initializeLoadMoreView(topLoadMoreView);
     initializeLoadMoreView(bottomLoadMoreView);
 
@@ -1129,6 +1131,7 @@ public class ConversationFragment extends LoggingFragment {
     void setThreadId(long threadId);
     void handleReplyMessage(ConversationMessage conversationMessage);
     void handleEditNote(ConversationMessage conversationMessage);
+    void onBannerTitleClicked(View v);
     void onMessageActionToolbarOpened();
     void onForwardClicked();
     void onMessageRequest(@NonNull MessageRequestViewModel viewModel);

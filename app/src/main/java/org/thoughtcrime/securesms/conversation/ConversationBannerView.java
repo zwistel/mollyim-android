@@ -53,6 +53,10 @@ public class ConversationBannerView extends ConstraintLayout {
     contactTitle.setText(title);
   }
 
+  public void setTitleOnClickListener(@Nullable OnClickListener l) {
+    contactTitle.setOnClickListener(l);
+  }
+
   public void setSubtitle(@Nullable CharSequence subtitle) {
     contactSubtitle.setText(subtitle);
     contactSubtitle.setVisibility(TextUtils.isEmpty(subtitle) ? GONE : VISIBLE);

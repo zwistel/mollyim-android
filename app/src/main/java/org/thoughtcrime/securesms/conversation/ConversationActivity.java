@@ -202,6 +202,7 @@ import org.thoughtcrime.securesms.mms.VideoSlide;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.profiles.GroupShareProfileView;
+import org.thoughtcrime.securesms.profiles.edit.EditProfileActivity;
 import org.thoughtcrime.securesms.providers.BlobProvider;
 import org.thoughtcrime.securesms.reactions.ReactionsBottomSheetDialogFragment;
 import org.thoughtcrime.securesms.reactions.any.ReactWithAnyEmojiBottomSheetDialogFragment;
@@ -3179,6 +3180,13 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     composeText.setText("");
     composeText.append(conversationMessage.getDisplayBody(this));
+  }
+
+  @Override
+  public void onBannerTitleClicked(View v) {
+    if (recipient.get().isNote()) {
+      startActivity(EditProfileActivity.getIntentForNoteEdit(this, recipient.getId().serialize()));
+    }
   }
 
   @Override

@@ -16,6 +16,7 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.groups.GroupId;
 import org.thoughtcrime.securesms.util.DynamicRegistrationTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
+import org.thoughtcrime.securesms.util.ViewUtil;
 
 @SuppressLint("StaticFieldLeak")
 public class EditProfileActivity extends BaseActivity implements EditProfileFragment.Controller {
@@ -96,6 +97,15 @@ public class EditProfileActivity extends BaseActivity implements EditProfileFrag
   public void onResume() {
     super.onResume();
     dynamicTheme.onResume(this);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    if (getCurrentFocus() != null) {
+      ViewUtil.hideKeyboard(this, getCurrentFocus());
+    }
   }
 
   @Override
