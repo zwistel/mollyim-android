@@ -74,8 +74,8 @@ public class SendButton extends AppCompatImageButton
     return transportOptions.getSelectedTransport();
   }
 
-  public void resetAvailableTransports(boolean isMediaMessage) {
-    transportOptions.reset(isMediaMessage);
+  public void resetAvailableTransports(boolean isNote) {
+    transportOptions.reset(isNote);
   }
 
   public void disableTransport(TransportOption.Type type) {

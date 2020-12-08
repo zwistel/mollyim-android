@@ -1382,7 +1382,7 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
     boolean isMediaMessage = recipient.get().isMmsGroup() || attachmentManager.isAttachmentPresent();
 
-    sendButton.resetAvailableTransports(isMediaMessage);
+    sendButton.resetAvailableTransports(recipient.get().isNote());
 
     calculateCharactersRemaining();
     supportInvalidateOptionsMenu();

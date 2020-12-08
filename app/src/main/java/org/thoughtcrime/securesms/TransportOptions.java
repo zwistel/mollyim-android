@@ -35,8 +35,8 @@ public class TransportOptions {
     this.enabledTransports    = initializeAvailableTransports(media);
   }
 
-  public void reset(boolean media) {
-    List<TransportOption> transportOptions = initializeAvailableTransports(media);
+  public void reset(boolean isNote) {
+    List<TransportOption> transportOptions = initializeAvailableTransports(isNote);
 
     this.enabledTransports.clear();
     this.enabledTransports.addAll(transportOptions);
@@ -93,13 +93,17 @@ public class TransportOptions {
   }
 
   public static @NonNull TransportOption getPushTransportOption(@NonNull Context context) {
+    return getPushTransportOption(context, false);
+  }
+
+  public static @NonNull TransportOption getPushTransportOption(@NonNull Context context, boolean isNote) {
+    final int composeHint = isNote ? R.string.note_to_self : R.string.conversation_activity__type_message_push;
     return new TransportOption(Type.TEXTSECURE,
                                R.drawable.ic_send_lock_24,
                                context.getResources().getColor(R.color.core_ultramarine),
                                context.getString(R.string.ConversationActivity_transport_signal),
-                               context.getString(R.string.conversation_activity__type_message_push),
+                               context.getString(composeHint),
                                new PushCharacterCalculator());
-
   }
 
   public void disableTransport(Type type) {
@@ -126,10 +130,10 @@ public class TransportOptions {
     this.listeners.add(listener);
   }
 
-  private List<TransportOption> initializeAvailableTransports(boolean isMediaMessage) {
+  private List<TransportOption> initializeAvailableTransports(boolean isNote) {
     List<TransportOption> results = new LinkedList<>();
 
-    results.add(getPushTransportOption(context));
+    results.add(getPushTransportOption(context, isNote));
 
     return results;
   }
