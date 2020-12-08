@@ -417,6 +417,10 @@ public class MmsDatabase extends MessageDatabase {
     throw new UnsupportedOperationException();
   }
 
+  public Optional<InsertResult> insertForwardedMessageInbox(IncomingTextMessage forwarded, long threadId) {
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public void insertProfileNameChangeMessages(@NonNull Recipient recipient, @NonNull String newProfileName, @NonNull String previousProfileName) {
     throw new UnsupportedOperationException();

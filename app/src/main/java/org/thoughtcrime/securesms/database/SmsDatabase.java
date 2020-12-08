@@ -740,6 +740,33 @@ public class SmsDatabase extends MessageDatabase {
   }
 
   @Override
+  public Optional<InsertResult> insertForwardedMessageInbox(IncomingTextMessage forwarded, long threadId) {
+    ContentValues values = new ContentValues(11);
+    values.put(RECIPIENT_ID, forwarded.getSender().serialize());
+    values.put(ADDRESS_DEVICE_ID,  forwarded.getSenderDeviceId());
+    values.put(DATE_RECEIVED, System.currentTimeMillis());
+    values.put(DATE_SENT, forwarded.getSentTimestampMillis());
+    values.put(DATE_SERVER, forwarded.getServerTimestampMillis());
+    values.put(PROTOCOL, forwarded.getProtocol());
+    values.put(READ, 1);
+    values.put(EXPIRES_IN, forwarded.getExpiresIn());
+    values.put(BODY, forwarded.getMessageBody());
+    values.put(TYPE, Types.BASE_INBOX_TYPE | Types.SECURE_MESSAGE_BIT | Types.PUSH_MESSAGE_BIT);
+    values.put(THREAD_ID, threadId);
+
+    SQLiteDatabase db        = databaseHelper.getWritableDatabase();
+    long           messageId = db.insert(TABLE_NAME, null, values);
+
+    ThreadDatabase threadDatabase = DatabaseFactory.getThreadDatabase(context);
+    threadDatabase.update(threadId, true);
+    threadDatabase.setLastSeen(threadId);
+
+    notifyConversationListeners(threadId);
+
+    return Optional.of(new InsertResult(messageId, threadId));
+  }
+
+  @Override
   public Optional<InsertResult> insertMessageInbox(IncomingTextMessage message, long type) {
     if (message.isJoined()) {
       type = (type & (Types.TOTAL_MASK - Types.BASE_TYPE_MASK)) | Types.JOINED_TYPE;

@@ -303,6 +303,9 @@ public class ConversationActivity extends PassphraseRequiredActivity
 
   public static final String RECIPIENT_EXTRA                   = "recipient_id";
   public static final String THREAD_ID_EXTRA                   = "thread_id";
+  public static final String SENDER_EXTRA                      = "sender_id";
+  public static final String SENT_TIMESTAMP_EXTRA              = "sent_timestamp";
+  public static final String SERVER_TIMESTAMP_EXTRA            = "server_timestamp";
   public static final String TEXT_EXTRA                        = "draft_text";
   public static final String MEDIA_EXTRA                       = "media_list";
   public static final String STICKER_EXTRA                     = "sticker_extra";

@@ -816,6 +816,9 @@ public class ConversationFragment extends LoggingFragment {
     SimpleTask.run(getLifecycle(), () -> {
       Intent composeIntent = new Intent(getActivity(), ShareActivity.class);
       composeIntent.putExtra(Intent.EXTRA_TEXT, conversationMessage.getDisplayBody(requireContext()));
+      composeIntent.putExtra(ConversationActivity.SENDER_EXTRA, conversationMessage.getMessageRecord().getIndividualRecipient().getId());
+      composeIntent.putExtra(ConversationActivity.SENT_TIMESTAMP_EXTRA, conversationMessage.getMessageRecord().getTimestamp());
+      composeIntent.putExtra(ConversationActivity.SERVER_TIMESTAMP_EXTRA, conversationMessage.getMessageRecord().getServerTimestamp());
 
       if (conversationMessage.getMessageRecord().isMms()) {
         MmsMessageRecord mediaMessage = (MmsMessageRecord) conversationMessage.getMessageRecord();
@@ -1420,10 +1423,9 @@ public class ConversationFragment extends LoggingFragment {
     }
 
     @Override
-    public void onGroupMemberClicked(@NonNull RecipientId recipientId, @NonNull GroupId groupId) {
+    public void onAvatarClicked(@NonNull RecipientId recipientId, @NonNull Optional<GroupId> groupId) {
       if (getContext() == null) return;
-
-      RecipientBottomSheetDialogFragment.create(recipientId, groupId).show(requireFragmentManager(), "BOTTOM");
+      RecipientBottomSheetDialogFragment.create(recipientId, groupId.orNull()).show(requireFragmentManager(), "BOTTOM");
     }
 
     @Override

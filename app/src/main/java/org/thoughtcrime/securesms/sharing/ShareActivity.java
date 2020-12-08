@@ -45,6 +45,7 @@ import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mediasend.Media;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.stickers.StickerLocator;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
@@ -162,7 +163,13 @@ public class ShareActivity extends PassphraseRequiredActivity
 
       long existingThread = DatabaseFactory.getThreadDatabase(this).getThreadIdIfExistsFor(recipient);
       return new Pair<>(existingThread, recipient);
-    }, result -> onDestinationChosen(result.first(), result.second().getId()));
+    }, result -> {
+      if (result.second().isNote()) {
+        onNoteChosen(result.first(), result.second());
+      } else {
+        onDestinationChosen(result.first(), result.second().getId());
+      }
+    });
 
     return true;
   }
@@ -261,6 +268,33 @@ public class ShareActivity extends PassphraseRequiredActivity
       }
       onDestinationChosen(threadId, recipientId);
     }
+  }
+
+  private void onNoteChosen(long threadId, @NonNull Recipient recipient) {
+    if (viewModel.isExternalShare()) {
+      onDestinationChosen(threadId, recipient.getId());
+      return;
+    }
+
+    final CharSequence textExtra = getIntent().getCharSequenceExtra(Intent.EXTRA_TEXT);
+    final List<Media>  mediaList = getIntent().getParcelableArrayListExtra(ConversationActivity.MEDIA_EXTRA);
+
+    long sentTimestamp   = getIntent().getLongExtra(ConversationActivity.SENT_TIMESTAMP_EXTRA, -1);
+    long serverTimestamp = getIntent().getLongExtra(ConversationActivity.SERVER_TIMESTAMP_EXTRA, -1);
+    long expiresIn       = recipient.getExpireMessages() * 1000L;
+
+    RecipientId sender = getIntent().getParcelableExtra(ConversationActivity.SENDER_EXTRA);
+
+    if (textExtra != null && sender != null) {
+      IncomingTextMessage forwarded = new IncomingTextMessage(sender, -1, sentTimestamp, serverTimestamp, textExtra.toString(), Optional.absent(), expiresIn, false);
+      DatabaseFactory.getSmsDatabase(this).insertForwardedMessageInbox(forwarded, threadId);
+      Toast.makeText(this, R.string.ShareActivity_text_message_saved_to_note, Toast.LENGTH_SHORT).show();
+    } else {
+      onDestinationChosen(threadId, recipient.getId());
+      return;
+    }
+
+    finish();
   }
 
   private void onDestinationChosen(long threadId, @NonNull RecipientId recipientId) {

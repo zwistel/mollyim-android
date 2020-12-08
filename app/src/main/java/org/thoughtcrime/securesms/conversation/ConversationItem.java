@@ -271,7 +271,7 @@ public class ConversationItem extends LinearLayout implements BindableConversati
     this.glideRequests          = glideRequests;
     this.batchSelected          = batchSelected;
     this.conversationRecipient  = conversationRecipient.live();
-    this.groupThread            = conversationRecipient.isGroup();
+    this.groupThread            = conversationRecipient.isGroup() || conversationRecipient.isNote();
     this.recipient              = messageRecord.getIndividualRecipient().live();
 
     this.recipient.observeForever(this);
@@ -925,7 +925,7 @@ public class ConversationItem extends LinearLayout implements BindableConversati
 
     contactPhoto.setOnClickListener(v -> {
       if (eventListener != null) {
-        eventListener.onGroupMemberClicked(recipientId, conversationRecipient.get().requireGroupId());
+        eventListener.onAvatarClicked(recipientId, conversationRecipient.get().getGroupId());
       }
     });
 
@@ -1511,7 +1511,7 @@ public class ConversationItem extends LinearLayout implements BindableConversati
     public void onClick(@NonNull View widget) {
       if (eventListener != null && !Recipient.resolved(mentionedRecipientId).isLocalNumber()) {
         VibrateUtil.vibrateTick(context);
-        eventListener.onGroupMemberClicked(mentionedRecipientId, conversationRecipient.get().requireGroupId());
+        eventListener.onAvatarClicked(mentionedRecipientId, conversationRecipient.get().getGroupId());
       }
     }
 

@@ -47,7 +47,7 @@ public interface BindableConversationItem extends Unbindable {
     void onMessageSharedContactClicked(@NonNull List<Recipient> choices);
     void onInviteSharedContactClicked(@NonNull List<Recipient> choices);
     void onReactionClicked(@NonNull View reactionTarget, long messageId, boolean isMms);
-    void onGroupMemberClicked(@NonNull RecipientId recipientId, @NonNull GroupId groupId);
+    void onAvatarClicked(@NonNull RecipientId recipientId, @NonNull Optional<GroupId> groupId);
     void onMessageWithErrorClicked(@NonNull MessageRecord messageRecord);
 
     /** @return true if handled, false if you want to let the normal url handling continue */
