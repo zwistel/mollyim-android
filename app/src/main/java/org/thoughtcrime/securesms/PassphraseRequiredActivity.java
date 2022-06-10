@@ -62,7 +62,7 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
     AppStartup.getInstance().onCriticalRenderEventStart();
     onPreCreate();
 
-    final boolean locked = KeyCachingService.isLocked();
+    final boolean locked = KeyCachingService.isSoftLocked();
     routeApplicationState(locked);
 
     if (!locked) {

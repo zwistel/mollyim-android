@@ -281,18 +281,6 @@ public class ApplicationContext extends MultiDexApplication implements AppForegr
   @MainThread
   public void onLock() {
     Log.i(TAG, "onLock()");
-
-    stopService(new Intent(this, WebRtcCallService.class));
-
-    finalizeExpiringMessageManager();
-    finalizeMessageRetrieval();
-    unregisterKeyEventReceiver();
-
-    ThreadUtil.runOnMainDelayed(() -> {
-      ApplicationDependencies.getJobManager().shutdown(TimeUnit.SECONDS.toMillis(10));
-      KeyCachingService.clearMasterSecret();
-      WipeMemoryService.run(this, true);
-    }, TimeUnit.SECONDS.toMillis(1));
   }
 
   public void checkBuildExpiration() {

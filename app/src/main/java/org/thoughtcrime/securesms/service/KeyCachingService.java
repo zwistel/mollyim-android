@@ -76,10 +76,16 @@ public class KeyCachingService extends Service {
 
   private static volatile boolean locking;
 
+  private static volatile boolean softLocked = true;
+
   public KeyCachingService() {}
 
   public static synchronized boolean isLocked() {
     return masterSecret == null || locking;
+  }
+
+  public static synchronized boolean isSoftLocked() {
+    return softLocked;
   }
 
   public static synchronized MasterSecret getMasterSecret() {
@@ -91,6 +97,7 @@ public class KeyCachingService extends Service {
 
   public static synchronized void setMasterSecret(final MasterSecret newMasterSecret) {
     masterSecret = newMasterSecret;
+    softLocked = false;
   }
 
   public static synchronized void clearMasterSecret() {
@@ -176,15 +183,11 @@ public class KeyCachingService extends Service {
       return;
     }
 
-    KeyCachingService.locking = true;
+    KeyCachingService.softLocked = true;
 
     sendPackageBroadcast(CLEAR_KEY_EVENT);
 
-    SignalExecutors.BOUNDED.execute(() -> {
-      MessageNotifier messageNotifier = ApplicationDependencies.getMessageNotifier();
-      messageNotifier.cancelDelayedNotifications();
-      messageNotifier.clearNotifications(KeyCachingService.this);
-    });
+    foregroundServiceSoftLock();
   }
 
   private void handleLocaleChanged() {
@@ -249,6 +252,22 @@ public class KeyCachingService extends Service {
     builder.setContentIntent(buildLaunchIntent());
 
     stopForeground(true);
+    startForeground(SERVICE_RUNNING_ID, builder.build());
+  }
+
+  private void foregroundServiceSoftLock() {
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.LOCKED_STATUS);
+
+    builder.setContentTitle(getString(R.string.prompt_passphrase_activity__signal_is_locked));
+    builder.setContentText(getString(R.string.KeyCachingService_signal_passphrase_cached));
+    builder.setSmallIcon(R.drawable.ic_lock_white_48dp);
+    builder.setColor(getResources().getColor(R.color.core_ultramarine));
+    builder.setWhen(0);
+    builder.setPriority(NotificationCompat.PRIORITY_LOW);
+    builder.setPriority(NotificationCompat.PRIORITY_MIN);
+
+    builder.setContentIntent(buildLaunchIntent());
+
     startForeground(SERVICE_RUNNING_ID, builder.build());
   }
 
