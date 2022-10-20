@@ -510,6 +510,8 @@ dependencies {
   "fossImplementation"("org.osmdroid:osmdroid-android:6.1.16")
   "fossImplementation"(project(":libfakegms"))
 
+  implementation(libs.unifiedpush.connector)
+
   "spinnerImplementation"(project(":spinner"))
 
   "canaryImplementation"(libs.square.leakcanary)
