@@ -121,6 +121,7 @@ android {
 
     getByName("main") {
       java.srcDir("$projectDir/src/unifiedpush/java")
+      res.srcDirs("$projectDir/src/unifiedpush/res")
     }
   }
 
