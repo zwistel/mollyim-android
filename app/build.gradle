@@ -181,6 +181,7 @@ android {
         buildConfigField "int", "SIGNAL_CANONICAL_VERSION_CODE", "$canonicalVersionCode"
         buildConfigField "String", "BACKUP_FILENAME", "\"" + BASE_APP_FILENAME.toLowerCase() + "\""
         buildConfigField "boolean", "FORCE_INTERNAL_USER_FLAG", "$FORCE_INTERNAL_USER_FLAG"
+        buildConfigField "int", "MAX_FAILED_PASSPHRASES_FOR_WIPE", "0"
 
         vectorDrawables.useSupportLibrary = true
 

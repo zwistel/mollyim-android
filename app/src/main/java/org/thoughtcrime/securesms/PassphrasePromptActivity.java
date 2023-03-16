@@ -323,12 +323,19 @@ public class PassphrasePromptActivity extends PassphraseActivity {
       MasterSecret masterSecret = null;
       try {
         masterSecret = MasterSecretUtil.getMasterSecret(getApplicationContext(), passphrase);
-      } catch (InvalidPassphraseException | UnrecoverableKeyException e) {
-        Log.d(TAG, e);
+      } catch (InvalidPassphraseException e) {
+        MasterSecretUtil.reportFailedPassphraseAttempt(getApplicationContext());
+        Log.i(TAG, "Unlock attempt failed", e);
+      } catch (UnrecoverableKeyException e) {
+        Log.e(TAG, "Failed to load KeyStore HMAC key", e);
       }
 
       Arrays.fill(passphrase, (char) 0);
       progressTimer.cancel();
+
+      if (masterSecret != null) {
+        MasterSecretUtil.reportSuccessfulPassphraseAttempt(getApplicationContext());
+      }
 
       return masterSecret;
     }

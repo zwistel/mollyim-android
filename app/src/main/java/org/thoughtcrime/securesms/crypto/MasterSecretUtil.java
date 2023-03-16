@@ -32,6 +32,7 @@ import org.signal.libsignal.protocol.ecc.Curve;
 import org.signal.libsignal.protocol.ecc.ECKeyPair;
 import org.signal.libsignal.protocol.ecc.ECPrivateKey;
 import org.signal.libsignal.protocol.ecc.ECPublicKey;
+import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.util.Base64;
 import org.thoughtcrime.securesms.util.Util;
 
@@ -233,6 +234,24 @@ public class MasterSecretUtil {
     changeMasterSecretPassphrase(context, masterSecret, passphrase);
 
     return masterSecret;
+  }
+
+  public static void reportFailedPassphraseAttempt(@NonNull Context context) {
+    long failedAttempts = retrieve(context, "passphrase_tries", 0) + 1;
+    long maxAttempts = BuildConfig.MAX_FAILED_PASSPHRASES_FOR_WIPE;
+
+    if (maxAttempts > 0 && maxAttempts <= failedAttempts) {
+      // Too many attempts. Wipe user data by overriding the KDF HMAC key.
+      String keyStoreAlias = retrieve(context, "keystore_alias", KEY_ALIAS_DEFAULT);
+      KeyStoreHelper.deleteKeyStoreEntry(keyStoreAlias);
+      KeyStoreHelper.createKeyStoreEntryHmac(keyStoreAlias, hasStrongBox(context));
+    }
+
+    getSharedPreferences(context).edit().putLong("passphrase_tries", failedAttempts).apply();
+  }
+
+  public static void reportSuccessfulPassphraseAttempt(@NonNull Context context) {
+    getSharedPreferences(context).edit().remove("passphrase_tries").apply();
   }
 
   private static byte[] retrieve(Context context, String key) {
